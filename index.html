@@ -122,17 +122,15 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-  const RENDER_BACKEND = "https://stripe-backend.onrender.com"; // replace with your Render URL
+  const RENDER_BACKEND = "https://stripe-backend-o6oh.onrender.com"; // your Render backend URL
   const subscribeBtn = document.getElementById('subscribeBtn');
 
   subscribeBtn.addEventListener('click', async () => {
     try {
-      const res = await fetch(RENDER_BACKEND + "/create-checkout-session", {
-        method: "POST",
-      });
+      const res = await fetch(RENDER_BACKEND + "/create-checkout-session", { method: "POST" });
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url; // redirect to Stripe Checkout
+        window.location.href = data.url;
       } else {
         alert("Error creating checkout session");
       }
@@ -142,7 +140,7 @@
     }
   });
 
-  // ===== Your existing music player JS =====
+  // ===== Music Player JS =====
   const songs = [
     {title:"Been Waiting", file:"Been_Waiting.mp3"},
     {title:"The Marina", file:"The_Marina.mp3"},
