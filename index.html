@@ -7,114 +7,40 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+      font-family: Arial, sans-serif;
       background: #000;
       color: #fff;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
+      flex-direction: column;
+      align-items: center;
     }
-
-    .container {
-      display: flex;
-      flex-direction: row;
-      width: 90%;
-      max-width: 1000px;
-      margin-top: 40px;
+    .card {
+      max-width: 480px;
+      width: 100%;
       background: #111;
       border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-    }
-
-    .cover-section {
-      width: 40%;
-      background: #1a1a1a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
       padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.6);
     }
-
-    .cover-section img {
+    img {
       width: 100%;
       border-radius: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
-
-    .cover-section h1 {
-      font-size: 1.5rem;
+    h1 {
       text-align: center;
-      margin-bottom: 6px;
-      color: #b380ff;
+      margin: 0 0 12px;
     }
-
-    .cover-section p {
-      font-size: 0.9rem;
-      color: #aaa;
-      text-align: center;
-      margin: 0;
-    }
-
-    .playlist-section {
-      width: 60%;
-      display: flex;
-      flex-direction: column;
-      background: #000;
-      padding: 20px;
-      overflow-y: auto;
-      max-height: 600px;
-    }
-
     .track {
-      display: grid;
-      grid-template-columns: 30px 1fr 60px;
-      align-items: center;
-      padding: 12px 8px;
-      border-bottom: 1px solid #222;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .track:hover {
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 8px;
       background: #1a1a1a;
-    }
-
-    .track-number {
-      color: #888;
-    }
-
-    .track-title {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
     }
-
-    .track-title span:first-child {
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .track-title span:last-child {
-      font-size: 0.85rem;
-      color: #aaa;
-    }
-
-    .track-duration {
-      text-align: right;
-      color: #888;
-      font-size: 0.9rem;
-    }
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
     button {
       background: #8000FF;
       border: none;
@@ -123,75 +49,62 @@
       padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s;
+      margin-left: 4px;
     }
-
     button:hover {
       background: #a64dff;
     }
-
-    .sliders {
-      padding: 16px;
-      background: #111;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    label {
-      font-size: 0.9rem;
-      color: #aaa;
-    }
-
     input[type="range"] {
       width: 100%;
-      accent-color: #8000FF;
+      margin: 8px 0;
     }
-
-    audio {
-      display: none;
+    input[type="range"]::-webkit-slider-thumb {
+      background: #8000FF;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      background: #333;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- Cover Section -->
-    <div class="cover-section">
-      <img src="cover.jpg" alt="Album Cover">
-      <h1>FREEBEE'S</h1>
-      <p>by KINGXREEK</p>
-      <p style="margin-top:10px; color:#888;">Release Date: October 4, 2025</p>
-      <div class="controls">
-        <button onclick="prev()">⏮ Prev</button>
-        <button onclick="toggle()">▶️ / ⏸</button>
-        <button onclick="next()">⏭ Next</button>
-      </div>
+  <div class="card">
+    <img src="cover.jpg" alt="Cover">
+    <h1>My Playlist</h1>
+    <div id="playlist"></div>
+    <audio id="player"></audio>
+
+    <!-- Player Buttons -->
+    <div style="margin-top:12px;">
+      <button onclick="prev()">⏮ Prev</button>
+      <button onclick="toggle()">▶️/⏸</button>
+      <button onclick="next()">⏭ Next</button>
+      <button onclick="shuffle()">🔀 Shuffle</button>
+      <button onclick="loop()">🔁 Repeat</button>
     </div>
 
-    <!-- Playlist Section -->
-    <div class="playlist-section" id="playlist"></div>
-  </div>
-
-  <!-- Playhead + Volume -->
-  <div class="sliders" style="width:90%; max-width:1000px; margin: 10px auto; border-radius:12px;">
+    <!-- Playhead & Volume -->
     <label for="progress">Playhead:</label>
     <input type="range" id="progress" min="0" max="100" value="0">
+
     <label for="volume">Volume:</label>
     <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
   </div>
 
-  <audio id="player"></audio>
-
   <script>
     const songs = [
-      {title:"5WITCHY", artist:"KINGXREEK", duration:"2:06", file:"5WITCHY.mp3"},
-      {title:"REAL GUY", artist:"KINGXREEK", duration:"2:09", file:"REAL_GUY.mp3"},
-      {title:"WHAT IT WASN'T", artist:"KINGXREEK", duration:"2:41", file:"WHAT_IT_WASNT.mp3"},
-      {title:"BLOOD BROTHER", artist:"KINGXREEK", duration:"1:56", file:"BLOOD_BROTHER.mp3"},
-      {title:"WOP WOP", artist:"KINGXREEK", duration:"2:03", file:"WOP_WOP.mp3"},
-      {title:"POPPIN FLY $HI+", artist:"KINGXREEK", duration:"2:04", file:"POPPIN_FLY_SHI.mp3"},
-      {title:"BIG BANK", artist:"KINGXREEK", duration:"2:31", file:"BIG_BANK.mp3"}
+      {title:"Been Waiting", file:"Been_Waiting.mp3"},
+      {title:"The Marina", file:"The_Marina.mp3"},
+      {title:"What It Wasn't", file:"What_It_Wasnt.mp3"},
+      {title:"Put Me In Coach", file:"Put_Me_In_Coach.mp3"},
+      {title:"Attachments", file:"Attachments.mp3"},
+      {title:"Gangsta", file:"Gangsta.mp3"},
+      {title:"Abuntu", file:"Abuntu.mp3"},
+      {title:"Places They Can't Go", file:"Places_They_Cant_Go.mp3"},
+      {title:"Mdali", file:"Mdali.mp3"},
+      {title:"Bawo", file:"Bawo.mp3"},
+      {title:"Black Magic", file:"Black_Magic.mp3"},
+      {title:"Thinking Out Loud", file:"Thinking_Out_Loud.mp3"}
     ];
 
     const playlistDiv = document.getElementById('playlist');
@@ -200,48 +113,56 @@
     const volumeSlider = document.getElementById('volume');
     let current = 0;
 
-    // Build Playlist
+    // Build playlist
     songs.forEach((s,i)=>{
       const div=document.createElement('div');
       div.className='track';
-      div.innerHTML=`
-        <div class="track-number">${i+1}.</div>
-        <div class="track-title">
-          <span>${s.title}</span>
-          <span>${s.artist}</span>
-        </div>
-        <div class="track-duration">${s.duration}</div>
-      `;
-      div.addEventListener('click',()=>play(i));
+      div.innerHTML=`<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
       playlistDiv.appendChild(div);
     });
 
-    // Load & Play
+    // Player functions
     function load(i){player.src=songs[i].file;player.play();current=i;}
     function play(i){load(i);}
     function next(){current=(current+1)%songs.length;load(current);}
     function prev(){current=(current-1+songs.length)%songs.length;load(current);}
+    function shuffle(){current=Math.floor(Math.random()*songs.length);load(current);}
+    function loop(){player.loop=!player.loop;alert("Repeat "+(player.loop?"ON":"OFF"));}
     function toggle(){player.paused?player.play():player.pause();}
 
-    player.addEventListener('ended', ()=>next());
-
-    player.addEventListener('timeupdate', ()=>{
-      if (player.duration) progress.value = (player.currentTime / player.duration) * 100;
-    });
-
-    progress.addEventListener('input', ()=>{
-      if (player.duration) player.currentTime = (progress.value / 100) * player.duration;
-    });
-
-    volumeSlider.addEventListener('input', ()=>{player.volume = volumeSlider.value;});
-
-    // Spacebar play/pause
-    document.addEventListener('keydown', e=>{
-      if (e.code === 'Space'){ e.preventDefault(); toggle(); }
-    });
-
-    // Start with first track loaded
+    // Start first song
     load(0);
+
+    // Auto-play next track when current ends
+    player.addEventListener('ended', () => {
+      next();
+    });
+
+    // Playhead
+    player.addEventListener('timeupdate', () => {
+      if (player.duration) {
+        progress.value = (player.currentTime / player.duration) * 100;
+      }
+    });
+
+    progress.addEventListener('input', () => {
+      if (player.duration) {
+        player.currentTime = (progress.value / 100) * player.duration;
+      }
+    });
+
+    // Volume
+    volumeSlider.addEventListener('input', () => {
+      player.volume = volumeSlider.value;
+    });
+
+    // Spacebar toggles play/pause
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggle();
+      }
+    });
   </script>
 
 </body>
