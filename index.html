@@ -5,86 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KINGXREEK Playlist</title>
   <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: #0d001a;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .card {
-      width: 480px;
-      background: #1a0033;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 0 25px rgba(128, 0, 255, 0.4);
-    }
-
-    img {
-      width: 100%;
-      border-radius: 16px;
-      margin-bottom: 20px;
-      object-fit: cover;
-      box-shadow: 0 0 25px rgba(128, 0, 255, 0.6);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #bb86fc;
-      text-shadow: 0 0 8px rgba(128, 0, 255, 0.7);
-    }
-
-    .subscribe-container {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .subscribe-button {
-      background: #ff6bf7;
-      border: none;
-      color: #000;
-      font-weight: 700;
-      padding: 10px 20px;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 0 10px #ff6bf7;
-      font-size: 16px;
-      transition: all 0.2s ease;
-    }
-
-    .subscribe-button:hover {
-      background: #ff8cff;
-      transform: scale(1.05);
-    }
-
-    .controls { margin-bottom: 18px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
-    button { background: #bb86fc; border: none; color: #000; font-weight: 600; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 0 8px rgba(128, 0, 255, 0.6); }
-    button:hover { background: #d3a1ff; transform: scale(1.05); }
-    .now-playing { background: #240046; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 0 15px rgba(128, 0, 255, 0.4); width: 100%; text-align: center; transition: all 0.3s ease-in-out; }
-    .now-playing.active { box-shadow: 0 0 18px #a64dff; background: #30005a; }
-    .now-playing h2 { margin: 0; font-size: 16px; color: #bb86fc; font-weight: 700; }
-    .now-playing p { margin: 4px 0 8px; font-size: 14px; color: #fff; }
-    .slider-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
-    .progress-container { display: flex; align-items: center; flex: 1; gap: 8px; }
-    #progress { flex: 1; height: 6px; border-radius: 4px; appearance: none; background: linear-gradient(to right, #8000FF 0%, #333 0%); outline: none; cursor: pointer; transition: background 0.2s; }
-    #progress::-webkit-slider-thumb { appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #fff; border: 2px solid #8000FF; cursor: pointer; margin-top: -3px; }
-    #volume { width: 70px; accent-color: #8000FF; cursor: pointer; }
-    .time { font-size: 12px; color: #aaa; width: 40px; text-align: center; }
-    #playlist { max-height: 250px; overflow-y: auto; background: #120024; border-radius: 10px; padding: 10px; box-shadow: inset 0 0 10px rgba(128, 0, 255, 0.2); }
-    .track { margin: 8px 0; padding: 10px; border-radius: 8px; background: #1a1a1a; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease-in-out; }
-    .track:hover { background: #2a2a2a; box-shadow: 0 0 8px #8000FF40; }
-    .track.active { background: #2a0033; box-shadow: 0 0 16px #8000FFAA; transform: scale(1.02); }
+    body { font-family:"Poppins",sans-serif; background:#0d001a; color:#fff; display:flex; justify-content:center; align-items:flex-start; min-height:100vh; margin:0; padding:20px; }
+    .card { width:480px; background:#1a0033; padding:20px; border-radius:20px; box-shadow:0 0 25px rgba(128,0,255,0.4); }
+    img { width:100%; border-radius:16px; margin-bottom:20px; object-fit:cover; box-shadow:0 0 25px rgba(128,0,255,0.6); }
+    h1 { text-align:center; margin-bottom:20px; color:#bb86fc; text-shadow:0 0 8px rgba(128,0,255,0.7); }
+    .subscribe-container { text-align:center; margin-bottom:15px; }
+    .subscribe-button { background:#ff6bf7; border:none; color:#000; font-weight:700; padding:10px 20px; border-radius:10px; cursor:pointer; box-shadow:0 0 10px #ff6bf7; font-size:16px; transition:all 0.2s ease; }
+    .subscribe-button:hover { background:#ff8cff; transform:scale(1.05); }
+    .controls { margin-bottom:18px; display:flex; flex-direction:column; align-items:center; gap:10px; }
+    .buttons { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; }
+    button { background:#bb86fc; border:none; color:#000; font-weight:600; padding:8px 12px; border-radius:8px; cursor:pointer; transition:all 0.2s ease; box-shadow:0 0 8px rgba(128,0,255,0.6); }
+    button:hover { background:#d3a1ff; transform:scale(1.05); }
+    .now-playing { background:#240046; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 0 15px rgba(128,0,255,0.4); width:100%; text-align:center; transition:all 0.3s ease-in-out; }
+    .now-playing.active { box-shadow:0 0 18px #a64dff; background:#30005a; }
+    .now-playing h2 { margin:0; font-size:16px; color:#bb86fc; font-weight:700; }
+    .now-playing p { margin:4px 0 8px; font-size:14px; color:#fff; }
+    .slider-row { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; }
+    .progress-container { display:flex; align-items:center; flex:1; gap:8px; }
+    #progress { flex:1; height:6px; border-radius:4px; appearance:none; background:linear-gradient(to right,#8000FF 0%,#333 0%); outline:none; cursor:pointer; transition:background 0.2s; }
+    #progress::-webkit-slider-thumb { appearance:none; height:12px; width:12px; border-radius:50%; background:#fff; border:2px solid #8000FF; cursor:pointer; margin-top:-3px; }
+    #volume { width:70px; accent-color:#8000FF; cursor:pointer; }
+    .time { font-size:12px; color:#aaa; width:40px; text-align:center; }
+    #playlist { display:none; max-height:250px; overflow-y:auto; background:#120024; border-radius:10px; padding:10px; box-shadow:inset 0 0 10px rgba(128,0,255,0.2); }
+    .track { margin:8px 0; padding:10px; border-radius:8px; background:#1a1a1a; display:flex; justify-content:space-between; align-items:center; transition:all 0.3s ease-in-out; }
+    .track:hover { background:#2a2a2a; box-shadow:0 0 8px #8000FF40; }
+    .track.active { background:#2a0033; box-shadow:0 0 16px #8000FFAA; transform:scale(1.02); }
   </style>
 </head>
 <body>
-
 <div class="card">
   <img src="Cover.JPG" alt="Cover">
   <h1>KINGXREEK Playlist</h1>
@@ -101,7 +49,6 @@
       <button onclick="shuffle()">🔀 Shuffle</button>
       <button onclick="loop()">🔁 Repeat</button>
     </div>
-
     <div class="now-playing" id="nowPlaying">
       <h2>KINGXREEK</h2>
       <p id="songTitle">Loading...</p>
@@ -122,19 +69,36 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-  const RENDER_BACKEND = "https://stripe-backend-o6oh.onrender.com"; // your Render backend URL
+  const RENDER_BACKEND = "https://stripe-backend-o6oh.onrender.com";
   const subscribeBtn = document.getElementById('subscribeBtn');
+  const playlistDiv = document.getElementById('playlist');
+
+  // Check subscription status on page load
+  async function checkSubscription() {
+    try {
+      const res = await fetch(RENDER_BACKEND + "/check-subscription", { credentials: "include" });
+      const data = await res.json();
+      if (data.active) {
+        unlockPlayer();
+      }
+    } catch(e){ console.error(e); }
+  }
+
+  function unlockPlayer() {
+    playlistDiv.style.display = "block";
+    subscribeBtn.style.display = "none";
+  }
 
   subscribeBtn.addEventListener('click', async () => {
     try {
-      const res = await fetch(RENDER_BACKEND + "/create-checkout-session", { method: "POST" });
+      const res = await fetch(RENDER_BACKEND + "/create-checkout-session", { method: "POST", credentials: "include" });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
         alert("Error creating checkout session");
       }
-    } catch (err) {
+    } catch(err) {
       console.error(err);
       alert("Something went wrong");
     }
@@ -156,7 +120,6 @@
     {title:"Thinking Out Loud", file:"Thinking_Out_Loud.mp3"}
   ];
 
-  const playlistDiv = document.getElementById('playlist');
   const player = document.getElementById('player');
   const progress = document.getElementById('progress');
   const volumeSlider = document.getElementById('volume');
@@ -166,43 +129,28 @@
   const durationEl = document.getElementById('duration');
   let current = 0;
 
-  songs.forEach((s, i) => {
-    const div = document.createElement('div');
-    div.className = 'track';
-    div.innerHTML = `<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
-    playlistDiv.appendChild(div);
-  });
+  songs.forEach((s,i)=>{ const div=document.createElement('div'); div.className='track'; div.innerHTML=`<span>${s.title}</span><button onclick="play(${i})">Play</button>`; playlistDiv.appendChild(div); });
+  const trackElements=document.querySelectorAll('.track');
 
-  const trackElements = document.querySelectorAll('.track');
-
-  function load(i) { player.src = songs[i].file; player.play(); highlightTrack(i); updateNowPlaying(i); current = i; }
-  function play(i) { load(i); }
-  function next() { current = (current + 1) % songs.length; load(current); }
-  function prev() { current = (current - 1 + songs.length) % songs.length; load(current); }
-  function shuffle() { current = Math.floor(Math.random() * songs.length); load(current); }
-  function loop() { player.loop = !player.loop; alert("Repeat " + (player.loop ? "ON" : "OFF")); }
-  function toggle() { player.paused ? player.play() : player.pause(); }
-  function highlightTrack(i) { trackElements.forEach((t, idx) => { t.classList.toggle('active', idx === i); }); }
-  function updateNowPlaying(i) { songTitle.textContent = songs[i].title; nowPlaying.classList.add("active"); }
+  function load(i){ player.src=songs[i].file; player.play(); highlightTrack(i); updateNowPlaying(i); current=i; }
+  function play(i){ load(i); }
+  function next(){ current=(current+1)%songs.length; load(current); }
+  function prev(){ current=(current-1+songs.length)%songs.length; load(current); }
+  function shuffle(){ current=Math.floor(Math.random()*songs.length); load(current); }
+  function loop(){ player.loop=!player.loop; alert("Repeat "+(player.loop?"ON":"OFF")); }
+  function toggle(){ player.paused?player.play():player.pause(); }
+  function highlightTrack(i){ trackElements.forEach((t,idx)=>{ t.classList.toggle('active',idx===i); }); }
+  function updateNowPlaying(i){ songTitle.textContent=songs[i].title; nowPlaying.classList.add("active"); }
 
   load(0);
-  player.addEventListener('ended', next);
+  player.addEventListener('ended',next);
+  player.addEventListener('timeupdate',()=>{ if(player.duration){ const percent=(player.currentTime/player.duration)*100; progress.value=percent; progress.style.background=`linear-gradient(to right,#8000FF ${percent}%,#333 ${percent}%)`; currentTimeEl.textContent=formatTime(player.currentTime); durationEl.textContent=formatTime(player.duration); }});
+  progress.addEventListener('input',()=>{ if(player.duration) player.currentTime=(progress.value/100)*player.duration; });
+  volumeSlider.addEventListener('input',()=>{ player.volume=volumeSlider.value; });
+  document.addEventListener('keydown',(e)=>{ if(e.code==='Space'){ e.preventDefault(); toggle(); }});
+  function formatTime(sec){ const minutes=Math.floor(sec/60); const seconds=Math.floor(sec%60).toString().padStart(2,'0'); return `${minutes}:${seconds}`; }
 
-  player.addEventListener('timeupdate', () => {
-    if (player.duration) {
-      const percent = (player.currentTime / player.duration) * 100;
-      progress.value = percent;
-      progress.style.background = `linear-gradient(to right, #8000FF ${percent}%, #333 ${percent}%)`;
-      currentTimeEl.textContent = formatTime(player.currentTime);
-      durationEl.textContent = formatTime(player.duration);
-    }
-  });
-
-  progress.addEventListener('input', () => { if (player.duration) player.currentTime = (progress.value / 100) * player.duration; });
-  volumeSlider.addEventListener('input', () => { player.volume = volumeSlider.value; });
-
-  document.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); toggle(); } });
-  function formatTime(sec) { const minutes = Math.floor(sec / 60); const seconds = Math.floor(sec % 60).toString().padStart(2, '0'); return `${minutes}:${seconds}`; }
+  checkSubscription();
 </script>
 </body>
 </html>
