@@ -8,60 +8,43 @@
     body {
       margin: 0;
       padding: 20px;
-      font-family: 'Poppins', Arial, sans-serif;
-      background: #0b0b0b;
+      font-family: Arial, sans-serif;
+      background: #000;
       color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
     .card {
-      max-width: 500px;
+      max-width: 480px;
       width: 100%;
       background: #111;
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 8px 30px rgba(0,0,0,.7);
-      overflow: hidden;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.6);
     }
-
     img {
       width: 100%;
-      border-radius: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 20px rgba(128,0,255,0.4);
+      border-radius: 12px;
+      margin-bottom: 12px;
     }
-
     h1 {
       text-align: center;
-      margin: 0 0 16px;
-      color: #b380ff;
-      letter-spacing: 1px;
+      margin: 0 0 12px;
     }
-
-    .track {
-      margin: 8px 0;
-      padding: 12px 14px;
-      border-radius: 10px;
-      background: #1a1a1a;
+    .controls {
+      margin-bottom: 16px;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      transition: all 0.2s ease;
-      cursor: pointer;
     }
-
-    .track:hover {
-      background: #252525;
-      transform: scale(1.01);
+    .buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
     }
-
-    .track.playing {
-      background: rgba(128,0,255,0.2);
-      border-left: 4px solid #8000FF;
-    }
-
     button {
       background: #8000FF;
       border: none;
@@ -70,31 +53,29 @@
       padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
-      margin-left: 4px;
-      transition: background 0.2s ease;
+      margin: 2px;
     }
-
     button:hover {
       background: #a64dff;
     }
-
     input[type="range"] {
       width: 100%;
+      margin: 6px 0;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      background: #8000FF;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      background: #333;
+    }
+    .track {
       margin: 8px 0;
-      accent-color: #8000FF;
-    }
-
-    label {
-      font-size: 0.9rem;
-      color: #bbb;
-    }
-
-    .controls {
+      padding: 10px;
+      border-radius: 8px;
+      background: #1a1a1a;
       display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 12px;
+      justify-content: space-between;
+      align-items: center;
     }
   </style>
 </head>
@@ -103,24 +84,26 @@
   <div class="card">
     <img src="cover.jpg" alt="Cover">
     <h1>My Playlist</h1>
-    <div id="playlist"></div>
-    <audio id="player"></audio>
 
-    <!-- Player Buttons -->
+    <!-- Controls moved above playlist -->
     <div class="controls">
-      <button onclick="prev()">⏮ Prev</button>
-      <button onclick="toggle()">▶️ / ⏸</button>
-      <button onclick="next()">⏭ Next</button>
-      <button onclick="shuffle()">🔀 Shuffle</button>
-      <button onclick="loop()">🔁 Repeat</button>
+      <div class="buttons">
+        <button onclick="prev()">⏮ Prev</button>
+        <button onclick="toggle()">▶️/⏸</button>
+        <button onclick="next()">⏭ Next</button>
+        <button onclick="shuffle()">🔀 Shuffle</button>
+        <button onclick="loop()">🔁 Repeat</button>
+      </div>
+
+      <label for="progress">Playhead:</label>
+      <input type="range" id="progress" min="0" max="100" value="0">
+
+      <label for="volume">Volume:</label>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
     </div>
 
-    <!-- Playhead & Volume -->
-    <label for="progress">Playhead:</label>
-    <input type="range" id="progress" min="0" max="100" value="0">
-
-    <label for="volume">Volume:</label>
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    <div id="playlist"></div>
+    <audio id="player"></audio>
   </div>
 
   <script>
@@ -153,35 +136,22 @@
       playlistDiv.appendChild(div);
     });
 
-    const trackDivs = document.querySelectorAll('.track');
-
     // Player functions
-    function load(i){
-      player.src=songs[i].file;
-      player.play();
-      current=i;
-      updateHighlight();
-    }
-
-    function play(i){ load(i); }
-    function next(){ current=(current+1)%songs.length; load(current); }
-    function prev(){ current=(current-1+songs.length)%songs.length; load(current); }
-    function shuffle(){ current=Math.floor(Math.random()*songs.length); load(current); }
-    function loop(){ player.loop=!player.loop; alert("Repeat "+(player.loop?"ON":"OFF")); }
-    function toggle(){ player.paused?player.play():player.pause(); }
-
-    // Highlight playing song
-    function updateHighlight(){
-      trackDivs.forEach((div,idx)=>{
-        div.classList.toggle('playing', idx === current);
-      });
-    }
+    function load(i){player.src=songs[i].file;player.play();current=i;}
+    function play(i){load(i);}
+    function next(){current=(current+1)%songs.length;load(current);}
+    function prev(){current=(current-1+songs.length)%songs.length;load(current);}
+    function shuffle(){current=Math.floor(Math.random()*songs.length);load(current);}
+    function loop(){player.loop=!player.loop;alert("Repeat "+(player.loop?"ON":"OFF"));}
+    function toggle(){player.paused?player.play():player.pause();}
 
     // Start first song
     load(0);
 
     // Auto-play next track when current ends
-    player.addEventListener('ended', next);
+    player.addEventListener('ended', () => {
+      next();
+    });
 
     // Playhead
     player.addEventListener('timeupdate', () => {
