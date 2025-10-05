@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -15,6 +15,7 @@
       flex-direction: column;
       align-items: center;
     }
+
     .card {
       max-width: 520px;
       width: 100%;
@@ -23,11 +24,13 @@
       padding: 20px;
       box-shadow: 0 8px 24px rgba(0,0,0,.6);
     }
+
     img {
       width: 100%;
       border-radius: 12px;
       margin-bottom: 12px;
     }
+
     h1 {
       text-align: center;
       margin: 0 0 12px;
@@ -41,12 +44,14 @@
       align-items: center;
       gap: 10px;
     }
+
     .buttons {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
       gap: 8px;
     }
+
     button {
       background: #8000FF;
       border: none;
@@ -59,6 +64,7 @@
       transition: all 0.2s ease-in-out;
       box-shadow: 0 0 8px #8000FF80;
     }
+
     button:hover {
       background: #a64dff;
       box-shadow: 0 0 12px #a64dff;
@@ -75,37 +81,62 @@
       text-align: center;
       transition: all 0.3s ease-in-out;
     }
+
     .now-playing.active {
       box-shadow: 0 0 18px #a64dff;
       background: #1f002a;
     }
+
     .now-playing h2 {
       margin: 0;
       font-size: 16px;
       color: #a64dff;
       font-weight: 700;
     }
+
     .now-playing p {
       margin: 4px 0 8px;
       font-size: 14px;
       color: #fff;
     }
 
-    /* Range styling */
-    .slider-group {
+    /* Playhead + Volume Row */
+    .slider-row {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 4px;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
     }
-    input[type="range"] {
-      width: 90%;
+
+    /* Playhead styling */
+    #progress {
+      flex: 1;
+      height: 6px;
+      border-radius: 4px;
+      appearance: none;
+      background: linear-gradient(to right, #8000FF 0%, #8000FF 0%, #333 0%);
+      outline: none;
+      cursor: pointer;
+      transition: background 0.2s;
     }
-    input[type="range"]::-webkit-slider-thumb {
-      background: #8000FF;
+
+    #progress::-webkit-slider-thumb {
+      appearance: none;
+      height: 12px;
+      width: 12px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #8000FF;
+      cursor: pointer;
+      margin-top: -3px;
     }
-    input[type="range"]::-webkit-slider-runnable-track {
-      background: #333;
+
+    /* Volume Slider */
+    #volume {
+      width: 70px;
+      accent-color: #8000FF;
+      cursor: pointer;
     }
 
     /* Playlist Styles */
@@ -119,10 +150,12 @@
       align-items: center;
       transition: all 0.3s ease-in-out;
     }
+
     .track:hover {
       background: #2a2a2a;
       box-shadow: 0 0 8px #8000FF40;
     }
+
     .track.active {
       background: #2a0033;
       box-shadow: 0 0 16px #8000FFAA;
@@ -150,7 +183,8 @@
       <div class="now-playing" id="nowPlaying">
         <h2>KINGXREEK</h2>
         <p id="songTitle">Loading...</p>
-        <div class="slider-group">
+
+        <div class="slider-row">
           <input type="range" id="progress" min="0" max="100" value="0">
           <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
         </div>
@@ -231,10 +265,12 @@
       next();
     });
 
-    // Playhead
+    // Animated playhead fill color
     player.addEventListener('timeupdate', () => {
       if (player.duration) {
-        progress.value = (player.currentTime / player.duration) * 100;
+        const percent = (player.currentTime / player.duration) * 100;
+        progress.value = percent;
+        progress.style.background = `linear-gradient(to right, #8000FF ${percent}%, #333 ${percent}%)`;
       }
     });
 
