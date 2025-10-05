@@ -1,40 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Playlist</title>
-<style>
-body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;}
-.card{max-width:480px;width:100%;background:#111;border-radius:16px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,.6);}
-img{width:100%;border-radius:12px;margin-bottom:12px;}
-h1{text-align:center;margin:0 0 12px;}
-.track{margin:8px 0;padding:10px;border-radius:8px;background:#1a1a1a;display:flex;justify-content:space-between;align-items:center;}
-button{background:#1db954;border:none;color:#000;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;margin-left:4px;}
-audio{width:100%;margin-top:12px;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Playlist</title>
+  <style>
+    body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;}
+    .card{max-width:480px;width:100%;background:#111;border-radius:16px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,.6);}
+    img{width:100%;border-radius:12px;margin-bottom:12px;}
+    h1{text-align:center;margin:0 0 12px;}
+    .track{margin:8px 0;padding:10px;border-radius:8px;background:#1a1a1a;display:flex;justify-content:space-between;align-items:center;}
+    button{background:#1db954;border:none;color:#000;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;margin-left:4px;}
+    audio{width:100%;margin-top:12px;}
+  </style>
 </head>
 <body>
-<div class="card">
-  <img src="cover.jpg" alt="Cover">
-  <h1>My Playlist</h1>
 
-  <div id="playlist"></div>
-
-  <audio id="player" controls></audio>
-  <div style="margin-top:12px;">
-    <button onclick="prev()">⏮ Prev</button>
-    <button onclick="toggle()">▶️/⏸</button>
-    <button onclick="next()">⏭ Next</button>
-    <button onclick="shuffle()">🔀 Shuffle</button>
-    <button onclick="loop()">🔁 Repeat</button>
+  <div class="card">
+    <img src="cover.jpg" alt="Cover">
+    <h1>My Playlist</h1>
+    <div id="playlist"></div>
+    <audio id="player" controls></audio>
+    <div style="margin-top:12px;">
+      <button onclick="prev()">⏮ Prev</button>
+      <button onclick="toggle()">▶️/⏸</button>
+      <button onclick="next()">⏭ Next</button>
+      <button onclick="shuffle()">🔀 Shuffle</button>
+      <button onclick="loop()">🔁 Repeat</button>
+    </div>
   </div>
-</div>
 
-<script>
-// Update these with your actual song titles and filenames
-const songs = [
-  {title:"Been Waiting", file:"Been_Waiting.mp3"},
+  <!-- SCRIPT GOES HERE, AT THE VERY BOTTOM -->
+  <script>
+    const songs = [
+        {title:"Been Waiting", file:"Been_Waiting.mp3"},
   {title:"The Marina", file:"The_Marina.mp3"},
   {title:"What It Wasn't", file:"What_It_Wasnt.mp3"}
   {title:"Put Me In Coach", file:"Put_Me_In_Coach.mp3"}
@@ -46,32 +45,31 @@ const songs = [
   {title:"Bawo", file:"Bawo.mp3"}
   {title:"Black Magic", file:"Black_Magic.mp3"}
   {title:"Thinking Out Loud", file:"Thinking_Out_Loud.mp3"}
-];
+    ];
 
-const playlistDiv = document.getElementById('playlist');
-const player = document.getElementById('player');
-let current = 0;
+    const playlistDiv = document.getElementById('playlist');
+    const player = document.getElementById('player');
+    let current = 0;
 
-// Build the visible playlist
-songs.forEach((s,i)=>{
-  const div=document.createElement('div');
-  div.className='track';
-  div.innerHTML=`<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
-  playlistDiv.appendChild(div);
-});
+    // Build playlist
+    songs.forEach((s,i)=>{
+      const div=document.createElement('div');
+      div.className='track';
+      div.innerHTML=`<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
+      playlistDiv.appendChild(div);
+    });
 
-// Functions
-function load(i){player.src=songs[i].file;player.play();current=i;}
-function play(i){load(i);}
-function next(){current=(current+1)%songs.length;load(current);}
-function prev(){current=(current-1+songs.length)%songs.length;load(current);}
-function shuffle(){current=Math.floor(Math.random()*songs.length);load(current);}
-function loop(){player.loop=!player.loop;alert("Repeat "+(player.loop?"ON":"OFF"));}
-function toggle(){player.paused?player.play():player.pause();}
+    function load(i){player.src=songs[i].file;player.play();current=i;}
+    function play(i){load(i);}
+    function next(){current=(current+1)%songs.length;load(current);}
+    function prev(){current=(current-1+songs.length)%songs.length;load(current);}
+    function shuffle(){current=Math.floor(Math.random()*songs.length);load(current);}
+    function loop(){player.loop=!player.loop;alert("Repeat "+(player.loop?"ON":"OFF"));}
+    function toggle(){player.paused?player.play():player.pause();}
 
-// Start first song
-load(0);
-</script>
+    // Start first song
+    load(0);
+  </script>
 
 </body>
 </html>
