@@ -60,8 +60,7 @@
 <body>
 
   <div class="card">
-    <!-- Replace this URL with your cover image raw URL -->
-    <img src="https://raw.githubusercontent.com/username/repo/main/cover.jpg" alt="Cover">
+    <img src="cover.jpg" alt="Cover">
     <h1>My Playlist</h1>
     <div id="playlist"></div>
     <audio id="player" controls></audio>
@@ -74,22 +73,22 @@
     </div>
   </div>
 
+  <!-- SCRIPT AT BOTTOM -->
   <script>
-    // Replace these URLs with your actual raw GitHub MP3 URLs
     const songs = [
-      {title:"Been Waiting", file:"https://raw.githubusercontent.com/username/repo/main/Been_Waiting.mp3"},
-      {title:"The Marina", file:"https://raw.githubusercontent.com/username/repo/main/The_Marina.mp3"},
-      {title:"What It Wasn't", file:"https://raw.githubusercontent.com/username/repo/main/What_It_Wasnt.mp3"},
-      {title:"Put Me In Coach", file:"https://raw.githubusercontent.com/username/repo/main/Put_Me_In_Coach.mp3"},
-      {title:"Attachments", file:"https://raw.githubusercontent.com/username/repo/main/Attachments.mp3"},
-      {title:"Gangsta", file:"https://raw.githubusercontent.com/username/repo/main/Gangsta.mp3"},
-      {title:"Abuntu", file:"https://raw.githubusercontent.com/username/repo/main/Abuntu.mp3"},
-      {title:"Places They Can't Go", file:"https://raw.githubusercontent.com/username/repo/main/Places_They_Cant_Go.mp3"},
-      {title:"Mdali", file:"https://raw.githubusercontent.com/username/repo/main/Mdali.mp3"},
-      {title:"Bawo", file:"https://raw.githubusercontent.com/username/repo/main/Bawo.mp3"},
-      {title:"Black Magic", file:"https://raw.githubusercontent.com/username/repo/main/Black_Magic.mp3"},
-      {title:"Thinking Out Loud", file:"https://raw.githubusercontent.com/username/repo/main/Thinking_Out_Loud.mp3"}
-    ];
+  {title:"Been Waiting", file:"Been_Waiting.mp3"},
+  {title:"The Marina", file:"The_Marina.mp3"},
+  {title:"What It Wasn't", file:"What_It_Wasnt.mp3"},
+  {title:"Put Me In Coach", file:"Put_Me_In_Coach.mp3"},
+  {title:"Attachments", file:"Attachments.mp3"},
+  {title:"Gangsta", file:"Gangsta.mp3"},
+  {title:"Abuntu", file:"Abuntu.mp3"},
+  {title:"Places They Can't Go", file:"Places_They_Cant_Go.mp3"},
+  {title:"Mdali", file:"Mdali.mp3"},
+  {title:"Bawo", file:"Bawo.mp3"},
+  {title:"Black Magic", file:"Black_Magic.mp3"},
+  {title:"Thinking Out Loud", file:"Thinking_Out_Loud.mp3"}
+];
 
     const playlistDiv = document.getElementById('playlist');
     const player = document.getElementById('player');
@@ -97,28 +96,24 @@
 
     // Build playlist
     songs.forEach((s,i)=>{
-      const div = document.createElement('div');
-      div.className = 'track';
-      div.innerHTML = `<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
+      const div=document.createElement('div');
+      div.className='track';
+      div.innerHTML=`<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
       playlistDiv.appendChild(div);
     });
 
-    function load(i) {
-      player.src = songs[i].file;
-      player.play();
-      current = i;
-    }
-
-    function play(i) { load(i); }
-    function next() { current = (current + 1) % songs.length; load(current); }
-    function prev() { current = (current - 1 + songs.length) % songs.length; load(current); }
-    function shuffle() { current = Math.floor(Math.random() * songs.length); load(current); }
-    function loop() { player.loop = !player.loop; alert("Repeat " + (player.loop ? "ON" : "OFF")); }
-    function toggle() { player.paused ? player.play() : player.pause(); }
+    function load(i){player.src=songs[i].file;player.play();current=i;}
+    function play(i){load(i);}
+    function next(){current=(current+1)%songs.length;load(current);}
+    function prev(){current=(current-1+songs.length)%songs.length;load(current);}
+    function shuffle(){current=Math.floor(Math.random()*songs.length);load(current);}
+    function loop(){player.loop=!player.loop;alert("Repeat "+(player.loop?"ON":"OFF"));}
+    function toggle(){player.paused?player.play():player.pause();}
 
     // Start first song
     load(0);
   </script>
 
 </body>
+<script>
 </html>
