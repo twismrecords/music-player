@@ -60,6 +60,94 @@
 <body>
 
   <div class="card">
+    <!-- Replace the URL below with your raw GitHub image URL -->
+    <img src="https://raw.githubusercontent.com/username/repo/main/cover.jpg" alt="Cover">
+    <h1>My Playlist</h1>
+    <div id="playlist"></div>
+    <audio id="player" controls></audio>
+    <div style="margin-top:12px;">
+      <button onclick="prev()">⏮ Prev</button>
+      <button onclick="toggle()">▶️/⏸</button>
+      <button onclick="next()">⏭ Next</button>
+      <button onclick="shuffle()">🔀 Shuffle</button>
+      <button onclick="loop()">🔁 Repeat</button>
+    </div>
+  </div>
+
+  <script>
+    // Replace these URLs with your raw GitHub MP3 URLs
+    const songs = [
+      {title:"Been Waiting", file:"https://raw.githubusercontent.com/username/repo/main/Been_Waiting.mp3"},
+      {title:"The Marina", file:"https://raw.githubusercontent.com/username/repo/main/The_Marina.mp3"},
+      {title:"What It Wasn't", file:"https://raw.githubusercontent.com/username/repo/main/What_It_Wasnt.mp3"},
+      {title:"Put Me In Coach", file:"https://raw.githubusercontent.com/username/repo/main/Put_Me_In_Coach.mp3"},
+      {title:"Attachments", file:"https://raw.githubusercontent.com/username/repo/main/Attachments.mp3"},
+      {title:"Gangsta", file:"https://raw.githubusercontent.com/username/repo/main/Gangsta.mp3"},
+      {title:"Abuntu", file:"https://raw.githubusercontent.com/username/repo/main/Abuntu.mp3"},
+      {title:"Places They Can't Go", file:"https://raw.githubusercontent.com/username/repo/main/Places_They_Cant_Go.mp3"},
+      {title:"Mdali", file:"https://raw.githubusercontent.com/username/repo/main/Mdali.mp3"},
+      {title:"Bawo", file:"https://raw.githubusercontent.com/username/repo/main/Bawo.mp3"},
+      {title:"Black Magic", file:"https://raw.githubusercontent.com/username/repo/main/Black_Magic.mp3"},
+      {title:"Thinking Out Loud", file:"https://raw.githubusercontent.com/username/repo/main/Thinking_Out_Loud.mp3"}
+    ];
+
+    const playlistDiv = document.getElementById('playlist');
+    const player = document.getElementById('player');
+    let current = 0;
+
+    // Build playlist
+    songs.forEach((s,i)=>{
+      const div = document.createElement('div');
+      div.className = 'track';
+      div.innerHTML = `<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
+      playlistDiv.appendChild(div);
+    });
+
+    function load(i) {
+      player.src = songs[i].file;
+      player.play();
+      current = i;
+    }
+
+    function play(i) { load(i); }
+    function next() { current = (current + 1) % songs.length; load(current); }
+    function prev() { current = (current - 1 + songs.length) % songs.length; load(current); }
+    function shuffle() { current = Math.floor(Math.random() * songs.length); load(current); }
+    function loop() { player.loop = !player.loop; alert("Repeat " + (player.loop ? "ON" : "OFF")); }
+    function toggle() { player.paused ? player.play() : player.pause(); }
+
+    // Start first song
+    load(0);
+  </script>
+
+</body>
+</html>
+      padding: 10px;
+      border-radius: 8px;
+      background: #1a1a1a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    button {
+      background: #1db954;
+      border: none;
+      color: #000;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+    audio {
+      width: 100%;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
     <img src="cover.jpg" alt="Cover">
     <h1>My Playlist</h1>
     <div id="playlist"></div>
