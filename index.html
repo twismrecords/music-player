@@ -149,11 +149,11 @@ document.getElementById('volume').addEventListener('input',()=>{ player.volume=d
 // ===== Stripe Subscription =====
 subscribeBtn.addEventListener("click", async ()=>{
   try{
-    const res=await fetch(BACKEND_URL+"/create-checkout-session",{method:"POST",credentials:"include"});
+    const res=await fetch(BACKEND_URL+"/create-checkout-session",{method:"POST"});
     const data=await res.json();
     if(data.url) window.location.href=data.url;
-    else alert("Error creating checkout session");
-  }catch(e){ console.error(e); alert("Something went wrong"); }
+    else alert("Error creating checkout session. Check backend env variables.");
+  }catch(e){ console.error(e); alert("Something went wrong. Make sure backend is live and env variables are correct."); }
 });
 
 // ===== Check subscription =====
@@ -161,7 +161,11 @@ async function checkSubscription() {
   try{
     const res=await fetch(BACKEND_URL+"/check-subscription",{credentials:"include"});
     const data=await res.json();
-    if(data.active){ isSubscribed=true; unlockPlayer(); subscribeBtn.style.display="none"; }
+    if(data.active){
+      isSubscribed=true;
+      unlockPlayer();
+      subscribeBtn.style.display="none";
+    }
   }catch(e){ console.error(e); }
 }
 checkSubscription();
