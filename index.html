@@ -18,14 +18,14 @@
     }
 
     .card {
-      width: 400px;
+      width: 480px;
       background: #1a0033;
       padding: 20px;
       border-radius: 20px;
       box-shadow: 0 0 25px rgba(128, 0, 255, 0.4);
     }
 
-    .cover {
+    img {
       width: 100%;
       border-radius: 16px;
       margin-bottom: 20px;
@@ -40,11 +40,19 @@
       text-shadow: 0 0 8px rgba(128, 0, 255, 0.7);
     }
 
-    #controls {
+    .controls {
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .buttons {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     button {
@@ -56,6 +64,7 @@
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s ease;
+      box-shadow: 0 0 8px rgba(128, 0, 255, 0.6);
     }
 
     button:hover {
@@ -63,59 +72,88 @@
       transform: scale(1.05);
     }
 
+    /* Now Playing Bubble */
     .now-playing {
-      background: #2d005c;
-      padding: 10px;
-      border-radius: 10px;
-      text-align: center;
-      margin-bottom: 12px;
-      box-shadow: 0 0 10px rgba(128, 0, 255, 0.5);
-    }
-
-    .bubble {
       background: #240046;
       padding: 15px;
       border-radius: 15px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       box-shadow: 0 0 15px rgba(128, 0, 255, 0.4);
+      width: 100%;
+      text-align: center;
+      transition: all 0.3s ease-in-out;
     }
 
-    .bubble h2 {
+    .now-playing.active {
+      box-shadow: 0 0 18px #a64dff;
+      background: #30005a;
+    }
+
+    .now-playing h2 {
       margin: 0;
       font-size: 16px;
       color: #bb86fc;
+      font-weight: 700;
+    }
+
+    .now-playing p {
+      margin: 4px 0 8px;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    /* Sliders */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
     }
 
     .progress-container {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-top: 8px;
+      flex: 1;
+      gap: 8px;
     }
 
-    input[type="range"] {
-      width: 100%;
-      cursor: pointer;
-      appearance: none;
-      background: transparent;
-    }
-
-    input[type="range"]::-webkit-slider-runnable-track {
+    #progress {
+      flex: 1;
       height: 6px;
-      background: linear-gradient(to right, #6200ea, #bb86fc);
-      border-radius: 10px;
+      border-radius: 4px;
+      appearance: none;
+      background: linear-gradient(to right, #8000FF 0%, #333 0%);
+      outline: none;
+      cursor: pointer;
+      transition: background 0.2s;
     }
 
-    input[type="range"]::-webkit-slider-thumb {
+    #progress::-webkit-slider-thumb {
       appearance: none;
-      width: 14px;
-      height: 14px;
-      background: #fff;
+      height: 12px;
+      width: 12px;
       border-radius: 50%;
-      margin-top: -4px;
+      background: #fff;
+      border: 2px solid #8000FF;
+      cursor: pointer;
+      margin-top: -3px;
+    }
+
+    #volume {
+      width: 70px;
+      accent-color: #8000FF;
       cursor: pointer;
     }
 
+    .time {
+      font-size: 12px;
+      color: #aaa;
+      width: 40px;
+      text-align: center;
+    }
+
+    /* Playlist */
     #playlist {
       max-height: 250px;
       overflow-y: auto;
@@ -126,151 +164,157 @@
     }
 
     .track {
+      margin: 8px 0;
       padding: 10px;
-      border-bottom: 1px solid #330066;
-      cursor: pointer;
       border-radius: 8px;
-      transition: all 0.2s ease;
+      background: #1a1a1a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease-in-out;
     }
 
     .track:hover {
-      background: #3d0066;
+      background: #2a2a2a;
+      box-shadow: 0 0 8px #8000FF40;
     }
 
     .track.active {
-      background: #6200ea;
-      color: #fff;
-      box-shadow: 0 0 10px rgba(128, 0, 255, 0.8);
-    }
-
-    .volume-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 8px;
+      background: #2a0033;
+      box-shadow: 0 0 16px #8000FFAA;
+      transform: scale(1.02);
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <img src="Cover.JPG" alt="Cover Art" class="cover" />
 
+  <div class="card">
+    <img src="Cover.JPG" alt="Cover">
     <h1>KINGXREEK Playlist</h1>
 
-    <div id="controls">
-      <button id="prev">⏮</button>
-      <button id="play">▶️</button>
-      <button id="pause">⏸</button>
-      <button id="stop">⏹</button>
-      <button id="next">⏭</button>
-      <button id="repeat">🔁</button>
-    </div>
-
-    <div class="bubble">
-      <h2>Now Playing: <span id="nowPlaying">None</span></h2>
-
-      <div class="progress-container">
-        <label>Playhead:</label>
-        <input type="range" id="playhead" value="0" min="0" max="100" />
+    <div class="controls">
+      <div class="buttons">
+        <button onclick="prev()">⏮ Prev</button>
+        <button onclick="toggle()">▶️ / ⏸</button>
+        <button onclick="next()">⏭ Next</button>
+        <button onclick="shuffle()">🔀 Shuffle</button>
+        <button onclick="loop()">🔁 Repeat</button>
       </div>
 
-      <div class="volume-container">
-        <label>Volume:</label>
-        <input type="range" id="volume" min="0" max="1" step="0.01" value="1" />
+      <div class="now-playing" id="nowPlaying">
+        <h2>KINGXREEK</h2>
+        <p id="songTitle">Loading...</p>
+
+        <div class="slider-row">
+          <div class="progress-container">
+            <span class="time" id="currentTime">0:00</span>
+            <input type="range" id="progress" min="0" max="100" value="0">
+            <span class="time" id="duration">0:00</span>
+          </div>
+          <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+        </div>
       </div>
     </div>
 
     <div id="playlist"></div>
-    <audio id="audio" controls style="display:none;"></audio>
+    <audio id="player"></audio>
   </div>
 
   <script>
-    const audio = document.getElementById("audio");
-    const playBtn = document.getElementById("play");
-    const pauseBtn = document.getElementById("pause");
-    const stopBtn = document.getElementById("stop");
-    const nextBtn = document.getElementById("next");
-    const prevBtn = document.getElementById("prev");
-    const repeatBtn = document.getElementById("repeat");
-    const nowPlaying = document.getElementById("nowPlaying");
-    const playlistContainer = document.getElementById("playlist");
-    const playhead = document.getElementById("playhead");
-    const volume = document.getElementById("volume");
-
-    const tracks = [
-      { title: "Bawo Oh", file: "bawo_oh.mp3" },
-      { title: "Another Song", file: "another_song.mp3" },
-      { title: "Final Track", file: "final_track.mp3" }
+    const songs = [
+      {title:"Been Waiting", file:"Been_Waiting.mp3"},
+      {title:"The Marina", file:"The_Marina.mp3"},
+      {title:"What It Wasn't", file:"What_It_Wasnt.mp3"},
+      {title:"Put Me In Coach", file:"Put_Me_In_Coach.mp3"},
+      {title:"Attachments", file:"Attachments.mp3"},
+      {title:"Gangsta", file:"Gangsta.mp3"},
+      {title:"Abuntu", file:"Abuntu.mp3"},
+      {title:"Places They Can't Go", file:"Places_They_Cant_Go.mp3"},
+      {title:"Mdali", file:"Mdali.mp3"},
+      {title:"Bawo", file:"Bawo.mp3"},
+      {title:"Black Magic", file:"Black_Magic.mp3"},
+      {title:"Thinking Out Loud", file:"Thinking_Out_Loud.mp3"}
     ];
 
-    let currentTrack = 0;
-    let isRepeat = false;
+    const playlistDiv = document.getElementById('playlist');
+    const player = document.getElementById('player');
+    const progress = document.getElementById('progress');
+    const volumeSlider = document.getElementById('volume');
+    const nowPlaying = document.getElementById('nowPlaying');
+    const songTitle = document.getElementById('songTitle');
+    const currentTimeEl = document.getElementById('currentTime');
+    const durationEl = document.getElementById('duration');
+    let current = 0;
 
-    function loadTrack(index) {
-      const track = tracks[index];
-      audio.src = track.file;
-      nowPlaying.textContent = `KINGXREEK - ${track.title}`;
-      document.querySelectorAll(".track").forEach(t => t.classList.remove("active"));
-      playlistContainer.children[index].classList.add("active");
-      audio.load();
+    songs.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'track';
+      div.innerHTML = `<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
+      playlistDiv.appendChild(div);
+    });
+
+    const trackElements = document.querySelectorAll('.track');
+
+    function load(i) {
+      player.src = songs[i].file;
+      player.play();
+      highlightTrack(i);
+      updateNowPlaying(i);
+      current = i;
     }
 
-    tracks.forEach((track, index) => {
-      const div = document.createElement("div");
-      div.classList.add("track");
-      div.textContent = track.title;
-      div.onclick = () => {
-        currentTrack = index;
-        loadTrack(currentTrack);
-        audio.play();
-      };
-      playlistContainer.appendChild(div);
-    });
+    function play(i) { load(i); }
+    function next() { current = (current + 1) % songs.length; load(current); }
+    function prev() { current = (current - 1 + songs.length) % songs.length; load(current); }
+    function shuffle() { current = Math.floor(Math.random() * songs.length); load(current); }
+    function loop() { player.loop = !player.loop; alert("Repeat " + (player.loop ? "ON" : "OFF")); }
+    function toggle() { player.paused ? player.play() : player.pause(); }
 
-    playBtn.onclick = () => audio.play();
-    pauseBtn.onclick = () => audio.pause();
-    stopBtn.onclick = () => { audio.pause(); audio.currentTime = 0; };
-    nextBtn.onclick = () => {
-      currentTrack = (currentTrack + 1) % tracks.length;
-      loadTrack(currentTrack);
-      audio.play();
-    };
-    prevBtn.onclick = () => {
-      currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
-      loadTrack(currentTrack);
-      audio.play();
-    };
-    repeatBtn.onclick = () => {
-      isRepeat = !isRepeat;
-      repeatBtn.style.background = isRepeat ? "#d3a1ff" : "#bb86fc";
-    };
+    function highlightTrack(i) {
+      trackElements.forEach((t, idx) => {
+        t.classList.toggle('active', idx === i);
+      });
+    }
 
-    audio.addEventListener("ended", () => {
-      if (isRepeat) audio.play();
-      else nextBtn.onclick();
-    });
+    function updateNowPlaying(i) {
+      songTitle.textContent = songs[i].title;
+      nowPlaying.classList.add("active");
+    }
 
-    audio.addEventListener("timeupdate", () => {
-      playhead.value = (audio.currentTime / audio.duration) * 100 || 0;
-    });
+    load(0);
+    player.addEventListener('ended', next);
 
-    playhead.addEventListener("input", () => {
-      audio.currentTime = (playhead.value / 100) * audio.duration;
-    });
-
-    volume.addEventListener("input", () => {
-      audio.volume = volume.value;
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.code === "Space") {
-        e.preventDefault();
-        if (audio.paused) audio.play();
-        else audio.pause();
+    // Update progress + times
+    player.addEventListener('timeupdate', () => {
+      if (player.duration) {
+        const percent = (player.currentTime / player.duration) * 100;
+        progress.value = percent;
+        progress.style.background = `linear-gradient(to right, #8000FF ${percent}%, #333 ${percent}%)`;
+        currentTimeEl.textContent = formatTime(player.currentTime);
+        durationEl.textContent = formatTime(player.duration);
       }
     });
 
-    loadTrack(currentTrack);
+    progress.addEventListener('input', () => {
+      if (player.duration) player.currentTime = (progress.value / 100) * player.duration;
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      player.volume = volumeSlider.value;
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggle();
+      }
+    });
+
+    function formatTime(sec) {
+      const minutes = Math.floor(sec / 60);
+      const seconds = Math.floor(sec % 60).toString().padStart(2, '0');
+      return `${minutes}:${seconds}`;
+    }
   </script>
 </body>
 </html>
