@@ -109,38 +109,11 @@
     function shuffle(){current=Math.floor(Math.random()*songs.length);load(current);}
     function loop(){player.loop=!player.loop;alert("Repeat "+(player.loop?"ON":"OFF"));}
     function toggle(){player.paused?player.play():player.pause();}
-    <!-- Progress bar / playhead -->
-<input type="range" id="progress" min="0" max="100" value="0" style="width:100%; margin-top:10px;">
-
-<!-- Volume slider -->
-<label for="volume">Volume:</label>
-<input type="range" id="volume" min="0" max="1" step="0.01" value="1">
 
     // Start first song
     load(0);
   </script>
 
 </body>
-  const progress = document.getElementById('progress');
-const volumeSlider = document.getElementById('volume');
-
-// Update progress bar as song plays
-player.addEventListener('timeupdate', () => {
-  if (player.duration) {
-    progress.value = (player.currentTime / player.duration) * 100;
-  }
-});
-
-// Seek song when user moves the slider
-progress.addEventListener('input', () => {
-  if (player.duration) {
-    player.currentTime = (progress.value / 100) * player.duration;
-  }
-});
-
-// Volume control
-volumeSlider.addEventListener('input', () => {
-  player.volume = volumeSlider.value;
-});
 <script>
 </html>
