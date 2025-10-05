@@ -32,6 +32,8 @@
       text-align: center;
       margin: 0 0 12px;
     }
+
+    /* CONTROL SECTION */
     .controls {
       margin-bottom: 16px;
       display: flex;
@@ -54,10 +56,16 @@
       border-radius: 8px;
       cursor: pointer;
       margin: 2px;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 0 8px #8000FF80;
     }
     button:hover {
       background: #a64dff;
+      box-shadow: 0 0 12px #a64dff;
+      transform: scale(1.05);
     }
+
+    /* RANGE STYLES */
     input[type="range"] {
       width: 100%;
       margin: 6px 0;
@@ -68,6 +76,8 @@
     input[type="range"]::-webkit-slider-runnable-track {
       background: #333;
     }
+
+    /* PLAYLIST STYLES */
     .track {
       margin: 8px 0;
       padding: 10px;
@@ -76,6 +86,16 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: all 0.3s ease-in-out;
+    }
+    .track:hover {
+      background: #2a2a2a;
+      box-shadow: 0 0 8px #8000FF40;
+    }
+    .track.active {
+      background: #2a0033;
+      box-shadow: 0 0 16px #8000FFAA;
+      transform: scale(1.02);
     }
   </style>
 </head>
@@ -85,7 +105,7 @@
     <img src="cover.jpg" alt="Cover">
     <h1>My Playlist</h1>
 
-    <!-- Controls moved above playlist -->
+    <!-- Controls -->
     <div class="controls">
       <div class="buttons">
         <button onclick="prev()">⏮ Prev</button>
@@ -129,26 +149,41 @@
     let current = 0;
 
     // Build playlist
-    songs.forEach((s,i)=>{
-      const div=document.createElement('div');
-      div.className='track';
-      div.innerHTML=`<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
+    songs.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'track';
+      div.innerHTML = `<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
       playlistDiv.appendChild(div);
     });
 
-    // Player functions
-    function load(i){player.src=songs[i].file;player.play();current=i;}
-    function play(i){load(i);}
-    function next(){current=(current+1)%songs.length;load(current);}
-    function prev(){current=(current-1+songs.length)%songs.length;load(current);}
-    function shuffle(){current=Math.floor(Math.random()*songs.length);load(current);}
-    function loop(){player.loop=!player.loop;alert("Repeat "+(player.loop?"ON":"OFF"));}
-    function toggle(){player.paused?player.play():player.pause();}
+    const trackElements = document.querySelectorAll('.track');
+
+    // Load + highlight
+    function load(i) {
+      player.src = songs[i].file;
+      player.play();
+      highlightTrack(i);
+      current = i;
+    }
+
+    function play(i) { load(i); }
+    function next() { current = (current + 1) % songs.length; load(current); }
+    function prev() { current = (current - 1 + songs.length) % songs.length; load(current); }
+    function shuffle() { current = Math.floor(Math.random() * songs.length); load(current); }
+    function loop() { player.loop = !player.loop; alert("Repeat " + (player.loop ? "ON" : "OFF")); }
+    function toggle() { player.paused ? player.play() : player.pause(); }
+
+    // Highlight active track
+    function highlightTrack(i) {
+      trackElements.forEach((t, idx) => {
+        t.classList.toggle('active', idx === i);
+      });
+    }
 
     // Start first song
     load(0);
 
-    // Auto-play next track when current ends
+    // Auto-play next track
     player.addEventListener('ended', () => {
       next();
     });
@@ -171,7 +206,7 @@
       player.volume = volumeSlider.value;
     });
 
-    // Spacebar toggles play/pause
+    // Spacebar toggle
     document.addEventListener('keydown', (e) => {
       if (e.code === 'Space') {
         e.preventDefault();
