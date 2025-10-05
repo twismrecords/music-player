@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KINGXREEK Playlist</title>
 <style>
+/* Your existing CSS for body, card, buttons, playlist, etc. */
 body { font-family:"Poppins",sans-serif; background:#0d001a; color:#fff; display:flex; justify-content:center; align-items:flex-start; min-height:100vh; margin:0; padding:20px; }
 .card { width:480px; background:#1a0033; padding:20px; border-radius:20px; box-shadow:0 0 25px rgba(128,0,255,0.4); }
 img { width:100%; border-radius:16px; margin-bottom:20px; object-fit:cover; box-shadow:0 0 25px rgba(128,0,255,0.6); }
@@ -152,20 +153,16 @@ subscribeBtn.addEventListener("click", async ()=>{
     const res=await fetch(BACKEND_URL+"/create-checkout-session",{method:"POST"});
     const data=await res.json();
     if(data.url) window.location.href=data.url;
-    else alert("Error creating checkout session. Check backend env variables.");
+    else alert("Error creating checkout session");
   }catch(e){ console.error(e); alert("Something went wrong. Make sure backend is live and env variables are correct."); }
 });
 
-// ===== Check subscription =====
+// ===== Check subscription (simple demo) =====
 async function checkSubscription() {
   try{
-    const res=await fetch(BACKEND_URL+"/check-subscription",{credentials:"include"});
+    const res=await fetch(BACKEND_URL+"/check-subscription");
     const data=await res.json();
-    if(data.active){
-      isSubscribed=true;
-      unlockPlayer();
-      subscribeBtn.style.display="none";
-    }
+    if(data.active){ isSubscribed=true; unlockPlayer(); subscribeBtn.style.display="none"; }
   }catch(e){ console.error(e); }
 }
 checkSubscription();
