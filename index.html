@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>KINGXREEK Playlist</title>
 <style>
-/* Your existing CSS for body, card, buttons, playlist, etc. */
 body { font-family:"Poppins",sans-serif; background:#0d001a; color:#fff; display:flex; justify-content:center; align-items:flex-start; min-height:100vh; margin:0; padding:20px; }
 .card { width:480px; background:#1a0033; padding:20px; border-radius:20px; box-shadow:0 0 25px rgba(128,0,255,0.4); }
 img { width:100%; border-radius:16px; margin-bottom:20px; object-fit:cover; box-shadow:0 0 25px rgba(128,0,255,0.6); }
@@ -36,7 +35,7 @@ button:hover { background:#d3a1ff; transform:scale(1.05); }
 </head>
 <body>
 <div class="card">
-<img src="Cover.JPG" alt="Cover">
+<img src="Cover.JPG" alt="Cover" />
 <h1>KINGXREEK Playlist</h1>
 
 <div class="subscribe-container">
@@ -57,10 +56,10 @@ button:hover { background:#d3a1ff; transform:scale(1.05); }
     <div class="slider-row">
       <div class="progress-container">
         <span class="time" id="currentTime">0:00</span>
-        <input type="range" id="progress" min="0" max="100" value="0">
+        <input type="range" id="progress" min="0" max="100" value="0" />
         <span class="time" id="duration">0:00</span>
       </div>
-      <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="1" />
     </div>
   </div>
 </div>
@@ -121,7 +120,7 @@ function unlockPlayer() {
 }
 lockPlayer();
 
-// ===== Music Player functions =====
+// Music Player functions
 let current=0;
 function load(i){ player.src=songs[i].file; player.play(); highlightTrack(i); updateNowPlaying(i); current=i; }
 function play(i){ if(!isSubscribed) return; load(i); }
@@ -147,17 +146,17 @@ player.addEventListener('timeupdate',()=>{
 document.getElementById('progress').addEventListener('input',()=>{ if(player.duration) player.currentTime=(document.getElementById('progress').value/100)*player.duration; });
 document.getElementById('volume').addEventListener('input',()=>{ player.volume=document.getElementById('volume').value; });
 
-// ===== Stripe Subscription =====
+// Stripe Subscription
 subscribeBtn.addEventListener("click", async ()=>{
   try{
-    const res=await fetch(BACKEND_URL+"/create-checkout-session",{method:"POST"});
+    const res=await fetch(BACKEND_URL+"/create-subscription",{method:"POST"});
     const data=await res.json();
     if(data.url) window.location.href=data.url;
     else alert("Error creating checkout session");
   }catch(e){ console.error(e); alert("Something went wrong. Make sure backend is live and env variables are correct."); }
 });
 
-// ===== Check subscription (simple demo) =====
+// Simple check subscription demo
 async function checkSubscription() {
   try{
     const res=await fetch(BACKEND_URL+"/check-subscription");
