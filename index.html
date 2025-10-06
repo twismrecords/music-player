@@ -5,14 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KINGXREEK Playlist</title>
 <style>
-/* Your existing CSS for body, card, buttons, playlist, etc. */
 body { font-family:"Poppins",sans-serif; background:#0d001a; color:#fff; display:flex; justify-content:center; align-items:flex-start; min-height:100vh; margin:0; padding:20px; }
 .card { width:480px; background:#1a0033; padding:20px; border-radius:20px; box-shadow:0 0 25px rgba(128,0,255,0.4); }
 img { width:100%; border-radius:16px; margin-bottom:20px; object-fit:cover; box-shadow:0 0 25px rgba(128,0,255,0.6); }
 h1 { text-align:center; margin-bottom:20px; color:#bb86fc; text-shadow:0 0 8px rgba(128,0,255,0.7); }
-.subscribe-container { text-align:center; margin-bottom:15px; }
-.subscribe-button { background:#ff6bf7; border:none; color:#000; font-weight:700; padding:10px 20px; border-radius:10px; cursor:pointer; box-shadow:0 0 10px #ff6bf7; font-size:16px; transition:all 0.2s ease; }
-.subscribe-button:hover { background:#ff8cff; transform:scale(1.05); }
 .controls { margin-bottom:18px; display:flex; flex-direction:column; align-items:center; gap:10px; }
 .buttons { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; }
 button { background:#bb86fc; border:none; color:#000; font-weight:600; padding:8px 12px; border-radius:8px; cursor:pointer; transition:all 0.2s ease; box-shadow:0 0 8px rgba(128,0,255,0.6); }
@@ -31,17 +27,13 @@ button:hover { background:#d3a1ff; transform:scale(1.05); }
 .track { margin:8px 0; padding:10px; border-radius:8px; background:#1a1a1a; display:flex; justify-content:space-between; align-items:center; transition:all 0.3s ease-in-out; }
 .track:hover { background:#2a2a2a; box-shadow:0 0 8px #8000FF40; }
 .track.active { background:#2a0033; box-shadow:0 0 16px #8000FFAA; transform:scale(1.02); }
-.track button { pointer-events:none; opacity:0.4; }
+.track button { pointer-events:auto; opacity:1; }
 </style>
 </head>
 <body>
 <div class="card">
 <img src="Cover.JPG" alt="Cover">
 <h1>KINGXREEK Playlist</h1>
-
-<div class="subscribe-container">
-  <button class="subscribe-button" id="subscribeBtn">Subscribe $7.99/mo</button>
-</div>
 
 <div class="controls">
   <div class="buttons">
@@ -69,14 +61,7 @@ button:hover { background:#d3a1ff; transform:scale(1.05); }
 <audio id="player"></audio>
 </div>
 
-<script src="https://js.stripe.com/v3/"></script>
 <script>
-const BACKEND_URL = "https://stripe-backend-o6oh.onrender.com";
-const subscribeBtn = document.getElementById('subscribeBtn');
-const playlistDiv = document.getElementById('playlist');
-const player = document.getElementById('player');
-let isSubscribed = false;
-
 // Songs array
 const songs = [
   {title:"Been Waiting", file:"Been_Waiting.mp3"},
@@ -93,43 +78,36 @@ const songs = [
   {title:"Thinking Out Loud", file:"Thinking_Out_Loud.mp3"}
 ];
 
+const playlistDiv = document.getElementById('playlist');
+const player = document.getElementById('player');
 const trackElements = [];
+
 function renderPlaylist() {
   playlistDiv.innerHTML = "";
   songs.forEach((s,i)=>{
     const div=document.createElement("div");
     div.className="track";
-    div.innerHTML=`<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
+    div.innerHTML=`<span>${s.title}</span><button onclick="load(${i})">Play</button>`;
     playlistDiv.appendChild(div);
     trackElements.push(div);
   });
 }
 renderPlaylist();
 
-function lockPlayer() {
-  trackElements.forEach(t=>{
-    const b=t.querySelector("button");
-    b.disabled=true; b.style.pointerEvents="none"; b.style.opacity="0.4";
-  });
-  player.pause();
-}
-function unlockPlayer() {
-  trackElements.forEach(t=>{
-    const b=t.querySelector("button");
-    b.disabled=false; b.style.pointerEvents="auto"; b.style.opacity="1";
-  });
-}
-lockPlayer();
-
 // ===== Music Player functions =====
 let current=0;
-function load(i){ player.src=songs[i].file; player.play(); highlightTrack(i); updateNowPlaying(i); current=i; }
-function play(i){ if(!isSubscribed) return; load(i); }
-function next(){ if(!isSubscribed) return; current=(current+1)%songs.length; load(current); }
-function prev(){ if(!isSubscribed) return; current=(current-1+songs.length)%songs.length; load(current); }
-function shuffle(){ if(!isSubscribed) return; current=Math.floor(Math.random()*songs.length); load(current); }
-function loop(){ if(!isSubscribed) return; player.loop=!player.loop; alert("Repeat "+(player.loop?"ON":"OFF")); }
-function toggle(){ if(!isSubscribed) return; player.paused?player.play():player.pause(); }
+function load(i){ 
+  player.src=songs[i].file; 
+  player.play(); 
+  highlightTrack(i); 
+  updateNowPlaying(i); 
+  current=i; 
+}
+function next(){ current=(current+1)%songs.length; load(current); }
+function prev(){ current=(current-1+songs.length)%songs.length; load(current); }
+function shuffle(){ current=Math.floor(Math.random()*songs.length); load(current); }
+function loop(){ player.loop=!player.loop; alert("Repeat "+(player.loop?"ON":"OFF")); }
+function toggle(){ player.paused?player.play():player.pause(); }
 function highlightTrack(i){ trackElements.forEach((t,idx)=>{ t.classList.toggle('active',idx===i); }); }
 function updateNowPlaying(i){ document.getElementById('songTitle').textContent=songs[i].title; document.getElementById('nowPlaying').classList.add("active"); }
 function formatTime(sec){ const m=Math.floor(sec/60); const s=Math.floor(sec%60).toString().padStart(2,"0"); return `${m}:${s}`; }
@@ -146,51 +124,6 @@ player.addEventListener('timeupdate',()=>{
 });
 document.getElementById('progress').addEventListener('input',()=>{ if(player.duration) player.currentTime=(document.getElementById('progress').value/100)*player.duration; });
 document.getElementById('volume').addEventListener('input',()=>{ player.volume=document.getElementById('volume').value; });
-
-// ===== Stripe Subscription =====
-subscribeBtn.addEventListener("click", async ()=>{
-  try{
-    const res=await fetch(BACKEND_URL+"/create-checkout-session",{method:"POST"});
-    const data=await res.json();
-    if(data.url) window.location.href=data.url;
-    else alert("Error creating checkout session");
-  }catch(e){ console.error(e); alert("Something went wrong. Make sure backend is live and env variables are correct."); }
-});
-
-// ===== Check subscription (simple demo) =====
-async function checkSubscription() {
-  try{
-    const res=await fetch(BACKEND_URL+"/check-subscription");
-    const data=await res.json();
-    if(data.active){ isSubscribed=true; unlockPlayer(); subscribeBtn.style.display="none"; }
-  }catch(e){ console.error(e); }
-}
-checkSubscription();
-
-// ===== Auto-unlock after Stripe payment =====
-function getQueryParam(name) {
-    const params = new URLSearchParams(window.location.search);
-    return params.get(name);
-}
-
-async function autoUnlockAfterPayment() {
-    const sessionId = getQueryParam('session_id');
-    if (!sessionId) return;
-
-    try {
-        const res = await fetch(`${BACKEND_URL}/check-subscription?session_id=${sessionId}`);
-        const data = await res.json();
-        if (data.active) {
-            isSubscribed = true;
-            unlockPlayer();
-            subscribeBtn.style.display = "none";
-            load(0); // Auto-play first song
-        }
-    } catch (e) {
-        console.error(e);
-    }
-}
-autoUnlockAfterPayment();
 </script>
 </body>
 </html>
