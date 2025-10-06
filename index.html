@@ -166,6 +166,31 @@ async function checkSubscription() {
   }catch(e){ console.error(e); }
 }
 checkSubscription();
+
+// ===== Auto-unlock after Stripe payment =====
+function getQueryParam(name) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+}
+
+async function autoUnlockAfterPayment() {
+    const sessionId = getQueryParam('session_id');
+    if (!sessionId) return;
+
+    try {
+        const res = await fetch(`${BACKEND_URL}/check-subscription?session_id=${sessionId}`);
+        const data = await res.json();
+        if (data.active) {
+            isSubscribed = true;
+            unlockPlayer();
+            subscribeBtn.style.display = "none";
+            load(0); // Auto-play first song
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+autoUnlockAfterPayment();
 </script>
 </body>
 </html>
