@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KINGXREEK Playlist</title>
 <style>
-/* Your existing CSS for body, card, buttons, playlist, etc. */
 body { font-family:"Poppins",sans-serif; background:#0d001a; color:#fff; display:flex; justify-content:center; align-items:flex-start; min-height:100vh; margin:0; padding:20px; }
 .card { width:480px; background:#1a0033; padding:20px; border-radius:20px; box-shadow:0 0 25px rgba(128,0,255,0.4); }
 img { width:100%; border-radius:16px; margin-bottom:20px; object-fit:cover; box-shadow:0 0 25px rgba(128,0,255,0.6); }
@@ -28,10 +27,12 @@ button:hover { background:#d3a1ff; transform:scale(1.05); }
 #volume { width:70px; accent-color:#8000FF; cursor:pointer; }
 .time { font-size:12px; color:#aaa; width:40px; text-align:center; }
 #playlist { max-height:250px; overflow-y:auto; background:#120024; border-radius:10px; padding:10px; box-shadow:inset 0 0 10px rgba(128,0,255,0.2); }
-.track { margin:8px 0; padding:10px; border-radius:8px; background:#1a1a1a; display:flex; justify-content:space-between; align-items:center; transition:all 0.3s ease-in-out; }
+.track { margin:8px 0; padding:10px; border-radius:8px; background:#1a1a1a; display:flex; justify-content:space-between; align-items:center; transition:all 0.3s ease-in-out; position:relative; }
 .track:hover { background:#2a2a2a; box-shadow:0 0 8px #8000FF40; }
 .track.active { background:#2a0033; box-shadow:0 0 16px #8000FFAA; transform:scale(1.02); }
 .track button { pointer-events:none; opacity:0.4; }
+.track.locked { opacity:0.3; pointer-events:none; }
+.track.locked::after { content:"🔒"; position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:18px; }
 </style>
 </head>
 <body>
@@ -98,7 +99,7 @@ function renderPlaylist() {
   playlistDiv.innerHTML = "";
   songs.forEach((s,i)=>{
     const div=document.createElement("div");
-    div.className="track";
+    div.className="track locked";
     div.innerHTML=`<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
     playlistDiv.appendChild(div);
     trackElements.push(div);
@@ -107,19 +108,12 @@ function renderPlaylist() {
 renderPlaylist();
 
 function lockPlayer() {
-  trackElements.forEach(t=>{
-    const b=t.querySelector("button");
-    b.disabled=true; b.style.pointerEvents="none"; b.style.opacity="0.4";
-  });
+  trackElements.forEach(t => t.classList.add("locked"));
   player.pause();
 }
 function unlockPlayer() {
-  trackElements.forEach(t=>{
-    const b=t.querySelector("button");
-    b.disabled=false; b.style.pointerEvents="auto"; b.style.opacity="1";
-  });
+  trackElements.forEach(t => t.classList.remove("locked"));
 }
-lockPlayer();
 
 // ===== Music Player functions =====
 let current=0;
@@ -150,14 +144,14 @@ document.getElementById('volume').addEventListener('input',()=>{ player.volume=d
 // ===== Stripe Subscription =====
 subscribeBtn.addEventListener("click", async ()=>{
   try{
-    const res=await fetch(BACKEND_URL+"/create-checkout-session",{method:"POST"});
+    const res=await fetch(BACKEND_URL+"/create-subscription",{method:"POST"});
     const data=await res.json();
     if(data.url) window.location.href=data.url;
     else alert("Error creating checkout session");
   }catch(e){ console.error(e); alert("Something went wrong. Make sure backend is live and env variables are correct."); }
 });
 
-// ===== Check subscription (simple demo) =====
+// ===== Check subscription =====
 async function checkSubscription() {
   try{
     const res=await fetch(BACKEND_URL+"/check-subscription");
