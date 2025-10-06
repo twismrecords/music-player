@@ -23,60 +23,66 @@ const songs = [
 ];
 
 const trackElements = [];
+
+// Render playlist
 function renderPlaylist() {
   playlistDiv.innerHTML = "";
   songs.forEach((s,i)=>{
-    const div=document.createElement("div");
-    div.className="track";
-    div.innerHTML=`<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
+    const div = document.createElement("div");
+    div.className = "track";
+    div.innerHTML = `<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
     playlistDiv.appendChild(div);
     trackElements.push(div);
   });
+  console.log("✅ Playlist rendered");
 }
 renderPlaylist();
 
+// Lock/unlock player buttons
 function lockPlayer() {
   trackElements.forEach(t=>{
     const b=t.querySelector("button");
     b.disabled=true; b.style.pointerEvents="none"; b.style.opacity="0.4";
   });
   player.pause();
+  console.log("🔒 Player locked (not subscribed)");
 }
 function unlockPlayer() {
   trackElements.forEach(t=>{
     const b=t.querySelector("button");
     b.disabled=false; b.style.pointerEvents="auto"; b.style.opacity="1";
   });
+  console.log("🔓 Player unlocked (subscribed)");
 }
 lockPlayer();
 
-// ===== Step 2: Record a play for a song =====
+// Track a song play
 async function recordPlay(i) {
-    const song = songs[i].title;
-    try {
-        await fetch(`${BACKEND_URL}/track-play`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ song }),
-        });
-    } catch (err) {
-        console.error("Error recording play:", err);
-    }
+  const song = songs[i].title;
+  try {
+    const res = await fetch(`${BACKEND_URL}/track-play`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ song }),
+    });
+    const data = await res.json();
+    console.log(`🎵 Played "${song}" - total plays: ${data.plays}`);
+  } catch (err) {
+    console.warn("⚠️ Error recording play:", err);
+  }
 }
 
-// ===== Music Player functions =====
-let current=0;
+// Music player functions
+let current = 0;
 function load(i){ 
-    player.src = songs[i].file; 
-    player.play(); 
-    highlightTrack(i); 
-    updateNowPlaying(i); 
-    current = i;
+  player.src = songs[i].file; 
+  player.play(); 
+  highlightTrack(i); 
+  updateNowPlaying(i); 
+  current = i;
 
-    // ===== Step 3: Trigger play tracking only for subscribed users =====
-    if (isSubscribed) recordPlay(i);
+  if(isSubscribed) recordPlay(i);
 }
-
 function play(i){ if(!isSubscribed) return; load(i); }
 function next(){ if(!isSubscribed) return; current=(current+1)%songs.length; load(current); }
 function prev(){ if(!isSubscribed) return; current=(current-1+songs.length)%songs.length; load(current); }
@@ -84,11 +90,14 @@ function shuffle(){ if(!isSubscribed) return; current=Math.floor(Math.random()*s
 function loop(){ if(!isSubscribed) return; player.loop=!player.loop; alert("Repeat "+(player.loop?"ON":"OFF")); }
 function toggle(){ if(!isSubscribed) return; player.paused?player.play():player.pause(); }
 function highlightTrack(i){ trackElements.forEach((t,idx)=>{ t.classList.toggle('active',idx===i); }); }
-function updateNowPlaying(i){ document.getElementById('songTitle').textContent=songs[i].title; document.getElementById('nowPlaying').classList.add("active"); }
+function updateNowPlaying(i){ 
+  document.getElementById('songTitle').textContent=songs[i].title; 
+  document.getElementById('nowPlaying').classList.add("active"); 
+}
 function formatTime(sec){ const m=Math.floor(sec/60); const s=Math.floor(sec%60).toString().padStart(2,"0"); return `${m}:${s}`; }
 
-player.addEventListener('ended',next);
-player.addEventListener('timeupdate',()=>{
+player.addEventListener('ended', next);
+player.addEventListener('timeupdate', ()=>{
   if(player.duration){
     const percent=(player.currentTime/player.duration)*100;
     document.getElementById('progress').value=percent;
@@ -97,51 +106,60 @@ player.addEventListener('timeupdate',()=>{
     document.getElementById('duration').textContent=formatTime(player.duration);
   }
 });
-document.getElementById('progress').addEventListener('input',()=>{ if(player.duration) player.currentTime=(document.getElementById('progress').value/100)*player.duration; });
-document.getElementById('volume').addEventListener('input',()=>{ player.volume=document.getElementById('volume').value; });
-
-// ===== Stripe Subscription =====
-subscribeBtn.addEventListener("click", async ()=>{
-  try{
-    const res=await fetch(BACKEND_URL+"/create-checkout-session",{method:"POST"});
-    const data=await res.json();
-    if(data.url) window.location.href=data.url;
-    else alert("Error creating checkout session");
-  }catch(e){ console.error(e); alert("Something went wrong. Make sure backend is live and env variables are correct."); }
+document.getElementById('progress').addEventListener('input', ()=>{
+  if(player.duration) player.currentTime=(document.getElementById('progress').value/100)*player.duration;
+});
+document.getElementById('volume').addEventListener('input', ()=>{
+  player.volume=document.getElementById('volume').value;
 });
 
-// ===== Check subscription (simple demo) =====
+// Stripe subscription
+subscribeBtn.addEventListener("click", async ()=>{
+  try{
+    const res = await fetch(`${BACKEND_URL}/create-checkout-session`, {method:"POST"});
+    const data = await res.json();
+    if(data.url) window.location.href = data.url;
+    else alert("❌ Error creating checkout session");
+  }catch(e){
+    console.error("⚠️ Stripe checkout error:", e);
+    alert("Something went wrong. Make sure backend is live and env variables are correct.");
+  }
+});
+
+// Check subscription status
 async function checkSubscription() {
   try{
-    const res=await fetch(BACKEND_URL+"/check-subscription");
-    const data=await res.json();
-    if(data.active){ isSubscribed=true; unlockPlayer(); subscribeBtn.style.display="none"; }
-  }catch(e){ console.error(e); }
+    const res = await fetch(`${BACKEND_URL}/check-subscription`);
+    const data = await res.json();
+    if(data.active){
+      isSubscribed = true;
+      unlockPlayer();
+      subscribeBtn.style.display = "none";
+    }
+  }catch(e){ console.warn("⚠️ Subscription check failed", e); }
 }
 checkSubscription();
 
-// ===== Auto-unlock after Stripe payment =====
+// Auto-unlock after Stripe payment
 function getQueryParam(name) {
-    const params = new URLSearchParams(window.location.search);
-    return params.get(name);
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
 }
-
 async function autoUnlockAfterPayment() {
-    const sessionId = getQueryParam('session_id');
-    if (!sessionId) return;
+  const sessionId = getQueryParam('session_id');
+  if(!sessionId) return;
 
-    try {
-        const res = await fetch(`${BACKEND_URL}/check-subscription?session_id=${sessionId}`);
-        const data = await res.json();
-        if (data.active) {
-            isSubscribed = true;
-            unlockPlayer();
-            subscribeBtn.style.display = "none";
-            load(0); // Auto-play first song
-        }
-    } catch (e) {
-        console.error(e);
+  try {
+    const res = await fetch(`${BACKEND_URL}/check-subscription?session_id=${sessionId}`);
+    const data = await res.json();
+    if(data.active){
+      isSubscribed = true;
+      unlockPlayer();
+      subscribeBtn.style.display = "none";
+      load(0); // Auto-play first song
+      console.log("✅ Subscription active, player unlocked");
     }
+  } catch(e){ console.warn("⚠️ Auto-unlock failed", e); }
 }
 autoUnlockAfterPayment();
 </script>
