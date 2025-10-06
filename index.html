@@ -54,6 +54,13 @@ button:hover { background:#d3a1ff; transform:scale(1.05); }
   box-shadow: 0 0 16px #ff6bf7, 0 0 25px #8000FFAA;
   transform: scale(1.1);
 }
+
+/* ===== Admin Panel ===== */
+#adminPanel { display:none; margin-top:20px; }
+#adminPanel h2 { color:#ff6bf7; text-align:center; margin-bottom:10px; }
+#adminPanel input { padding:8px; border-radius:8px; border:none; outline:none; flex:1; }
+#adminPanel button { background:#ff6bf7; color:#000; font-weight:700; padding:8px 16px; border-radius:8px; cursor:pointer; }
+#adminPlaysList li { padding:6px; border-bottom:1px solid #333; }
 </style>
 </head>
 <body>
@@ -88,6 +95,17 @@ button:hover { background:#d3a1ff; transform:scale(1.05); }
 </div>
 
 <div id="playlist"></div>
+
+<!-- ===== Hidden Admin Panel ===== -->
+<div id="adminPanel">
+  <h2>Admin - Song Plays</h2>
+  <div style="display:flex; gap:10px; margin-bottom:10px;">
+    <input type="password" id="adminSecretInput" placeholder="Enter admin secret">
+    <button onclick="unlockAdmin()">Unlock</button>
+  </div>
+  <ul id="adminPlaysList"></ul>
+</div>
+
 <audio id="player"></audio>
 </div>
 
@@ -199,7 +217,7 @@ subscribeBtn.addEventListener("click", async ()=>{
 async function checkSubscription() {
   try{
     const res=await fetch(BACKEND_URL+"/check-subscription");
-    const data=await res.json();
+    const data = await res.json();
     if(data.active){ isSubscribed=true; unlockPlayer(); subscribeBtn.style.display="none"; }
   }catch(e){ console.error(e); }
 }
@@ -239,6 +257,30 @@ async function recordPlay(i) {
         });
     } catch (err) {
         console.error("Error recording play:", err);
+    }
+}
+
+// ===== Admin Panel =====
+async function unlockAdmin() {
+    const secret = document.getElementById('adminSecretInput').value.trim();
+    if (!secret) return alert("Enter admin secret");
+
+    try {
+        const res = await fetch(`${BACKEND_URL}/admin/plays?secret=${encodeURIComponent(secret)}`);
+        if (res.status === 403) return alert("❌ Wrong secret");
+
+        const data = await res.json();
+        const list = document.getElementById('adminPlaysList');
+        list.innerHTML = "";
+        for (const song in data) {
+            const li = document.createElement('li');
+            li.textContent = `${song}: ${data[song]} plays`;
+            list.appendChild(li);
+        }
+        document.getElementById('adminPanel').style.display = "block";
+    } catch (err) {
+        console.error(err);
+        alert("❌ Error fetching play counts");
     }
 }
 
