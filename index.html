@@ -5,43 +5,91 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KINGXREEK Playlist</title>
 <style>
-  body { font-family: "Poppins", sans-serif; background: #111; color: #fff; margin: 0; padding: 20px; }
-  #playlist { margin-top: 20px; }
-  .track { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
-  .track.active span { font-weight: bold; color: #8000FF; }
-  button { padding: 5px 10px; border: none; border-radius: 5px; background: #8000FF; color: #fff; cursor: pointer; }
-  button:disabled { opacity: 0.4; cursor: not-allowed; }
-  #player-controls { margin-top: 10px; display: flex; gap: 10px; align-items: center; }
-  #nowPlaying { margin-top: 10px; font-weight: bold; }
-  #progress, #volume { width: 100%; }
+body { font-family:"Poppins",sans-serif; background:#0d001a; color:#fff; display:flex; justify-content:center; align-items:flex-start; min-height:100vh; margin:0; padding:20px; }
+.card { width:480px; background:#1a0033; padding:20px; border-radius:20px; box-shadow:0 0 25px rgba(128,0,255,0.4); }
+img { width:100%; border-radius:16px; margin-bottom:20px; object-fit:cover; box-shadow:0 0 25px rgba(128,0,255,0.6); }
+h1 { text-align:center; margin-bottom:20px; color:#bb86fc; text-shadow:0 0 8px rgba(128,0,255,0.7); }
+.subscribe-container { text-align:center; margin-bottom:15px; }
+.subscribe-button { background:#ff6bf7; border:none; color:#000; font-weight:700; padding:10px 20px; border-radius:10px; cursor:pointer; box-shadow:0 0 10px #ff6bf7; font-size:16px; transition:all 0.2s ease; }
+.subscribe-button:hover { background:#ff8cff; transform:scale(1.05); }
+.controls { margin-bottom:18px; display:flex; flex-direction:column; align-items:center; gap:10px; }
+.buttons { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; }
+button { background:#bb86fc; border:none; color:#000; font-weight:600; padding:8px 12px; border-radius:8px; cursor:pointer; transition:all 0.2s ease; box-shadow:0 0 8px rgba(128,0,255,0.6); }
+button:hover { background:#d3a1ff; transform:scale(1.05); }
+.now-playing { background:#240046; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 0 15px rgba(128,0,255,0.4); width:100%; text-align:center; transition:all 0.3s ease-in-out; }
+.now-playing.active { box-shadow:0 0 18px #a64dff; background:#30005a; }
+.now-playing h2 { margin:0; font-size:16px; color:#bb86fc; font-weight:700; }
+.now-playing p { margin:4px 0 8px; font-size:14px; color:#fff; }
+.slider-row { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; }
+.progress-container { display:flex; align-items:center; flex:1; gap:8px; }
+#progress { flex:1; height:6px; border-radius:4px; appearance:none; background:linear-gradient(to right,#8000FF 0%,#333 0%); outline:none; cursor:pointer; transition:background 0.2s; }
+#progress::-webkit-slider-thumb { appearance:none; height:12px; width:12px; border-radius:50%; background:#fff; border:2px solid #8000FF; cursor:pointer; margin-top:-3px; }
+#volume { width:70px; accent-color:#8000FF; cursor:pointer; }
+.time { font-size:12px; color:#aaa; width:40px; text-align:center; }
+#playlist { max-height:250px; overflow-y:auto; background:#120024; border-radius:10px; padding:10px; box-shadow:inset 0 0 10px rgba(128,0,255,0.2); }
+.track { margin:8px 0; padding:10px; border-radius:8px; background:#1a1a1a; display:flex; justify-content:space-between; align-items:center; transition:all 0.3s ease-in-out; }
+.track:hover { background:#2a2a2a; box-shadow:0 0 8px #8000FF40; }
+.track.active { background:#2a0033; box-shadow:0 0 16px #8000FFAA; transform:scale(1.02); }
+
+/* ===== Button glow for subscription ===== */
+.track button {
+  pointer-events: none;
+  opacity: 0.4;
+  background: #bb86fc;
+  color: #000;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 8px rgba(128,0,255,0.6);
+}
+.track button.unlocked {
+  pointer-events: auto;
+  opacity: 1;
+  box-shadow: 0 0 12px #ff6bf7, 0 0 20px #8000FF70;
+  transform: scale(1.05);
+}
+.track button:hover.unlocked {
+  box-shadow: 0 0 16px #ff6bf7, 0 0 25px #8000FFAA;
+  transform: scale(1.1);
+}
 </style>
 </head>
 <body>
-
+<div class="card">
+<img src="Cover.JPG" alt="Cover">
 <h1>KINGXREEK Playlist</h1>
-<button id="subscribeBtn">Subscribe to Unlock All Songs</button>
 
-<div id="nowPlaying">
-  <span id="songTitle"></span>
+<div class="subscribe-container">
+  <button class="subscribe-button" id="subscribeBtn">Subscribe $7.99/mo</button>
 </div>
 
-<audio id="player" controls></audio>
-
-<div id="player-controls">
-  <button onclick="prev()">Prev</button>
-  <button onclick="play(current)">Play</button>
-  <button onclick="next()">Next</button>
-  <button onclick="shuffle()">Shuffle</button>
-  <button onclick="loop()">Loop</button>
-</div>
-
-<input type="range" id="progress" min="0" max="100" value="0">
-<input type="range" id="volume" min="0" max="1" step="0.01" value="1">
-<div>
-  <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+<div class="controls">
+  <div class="buttons">
+    <button onclick="prev()">⏮ Prev</button>
+    <button onclick="toggle()">▶️ / ⏸</button>
+    <button onclick="next()">⏭ Next</button>
+    <button onclick="shuffle()">🔀 Shuffle</button>
+    <button onclick="loop()">🔁 Repeat</button>
+  </div>
+  <div class="now-playing" id="nowPlaying">
+    <h2>KINGXREEK</h2>
+    <p id="songTitle">Loading...</p>
+    <div class="slider-row">
+      <div class="progress-container">
+        <span class="time" id="currentTime">0:00</span>
+        <input type="range" id="progress" min="0" max="100" value="0">
+        <span class="time" id="duration">0:00</span>
+      </div>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    </div>
+  </div>
 </div>
 
 <div id="playlist"></div>
+<audio id="player"></audio>
+</div>
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
@@ -51,6 +99,7 @@ const playlistDiv = document.getElementById('playlist');
 const player = document.getElementById('player');
 let isSubscribed = false;
 
+// Songs array
 const songs = [
   {title:"Been Waiting", file:"Been_Waiting.mp3"},
   {title:"The Marina", file:"The_Marina.mp3"},
@@ -67,62 +116,52 @@ const songs = [
 ];
 
 const trackElements = [];
-
 function renderPlaylist() {
   playlistDiv.innerHTML = "";
   songs.forEach((s,i)=>{
-    const div = document.createElement("div");
-    div.className = "track";
-    div.innerHTML = `<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
+    const div=document.createElement("div");
+    div.className="track";
+    div.innerHTML=`<span>${s.title}</span><button onclick="play(${i})">Play</button>`;
     playlistDiv.appendChild(div);
     trackElements.push(div);
   });
-  console.log("✅ Playlist rendered");
 }
 renderPlaylist();
 
 function lockPlayer() {
   trackElements.forEach(t=>{
-    const b=t.querySelector("button");
-    b.disabled=true; b.style.pointerEvents="none"; b.style.opacity="0.4";
+    const b = t.querySelector("button");
+    b.disabled = true;
+    b.style.pointerEvents = "none";
+    b.style.opacity = "0.4";
+    b.classList.remove("unlocked");
   });
   player.pause();
-  console.log("🔒 Player locked (not subscribed)");
 }
+
 function unlockPlayer() {
   trackElements.forEach(t=>{
-    const b=t.querySelector("button");
-    b.disabled=false; b.style.pointerEvents="auto"; b.style.opacity="1";
+    const b = t.querySelector("button");
+    b.disabled = false;
+    b.style.pointerEvents = "auto";
+    b.style.opacity = "1";
+    b.classList.add("unlocked");
   });
-  console.log("🔓 Player unlocked (subscribed)");
 }
+
 lockPlayer();
 
-async function recordPlay(i) {
-  const song = songs[i].title;
-  try {
-    const res = await fetch(`${BACKEND_URL}/track-play`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ song }),
-    });
-    const data = await res.json();
-    console.log(`🎵 Played "${song}" - total plays: ${data.plays}`);
-  } catch (err) {
-    console.warn("⚠️ Error recording play:", err);
-  }
-}
-
-let current = 0;
+// ===== Music Player functions =====
+let current=0;
 function load(i){ 
-  player.src = songs[i].file; 
+  player.src=songs[i].file; 
   player.play(); 
   highlightTrack(i); 
   updateNowPlaying(i); 
-  current = i;
-
+  current=i; 
   if(isSubscribed) recordPlay(i);
 }
+
 function play(i){ if(!isSubscribed) return; load(i); }
 function next(){ if(!isSubscribed) return; current=(current+1)%songs.length; load(current); }
 function prev(){ if(!isSubscribed) return; current=(current-1+songs.length)%songs.length; load(current); }
@@ -130,14 +169,11 @@ function shuffle(){ if(!isSubscribed) return; current=Math.floor(Math.random()*s
 function loop(){ if(!isSubscribed) return; player.loop=!player.loop; alert("Repeat "+(player.loop?"ON":"OFF")); }
 function toggle(){ if(!isSubscribed) return; player.paused?player.play():player.pause(); }
 function highlightTrack(i){ trackElements.forEach((t,idx)=>{ t.classList.toggle('active',idx===i); }); }
-function updateNowPlaying(i){ 
-  document.getElementById('songTitle').textContent=songs[i].title; 
-  document.getElementById('nowPlaying').classList.add("active"); 
-}
+function updateNowPlaying(i){ document.getElementById('songTitle').textContent=songs[i].title; document.getElementById('nowPlaying').classList.add("active"); }
 function formatTime(sec){ const m=Math.floor(sec/60); const s=Math.floor(sec%60).toString().padStart(2,"0"); return `${m}:${s}`; }
 
-player.addEventListener('ended', next);
-player.addEventListener('timeupdate', ()=>{
+player.addEventListener('ended',next);
+player.addEventListener('timeupdate',()=>{
   if(player.duration){
     const percent=(player.currentTime/player.duration)*100;
     document.getElementById('progress').value=percent;
@@ -146,61 +182,67 @@ player.addEventListener('timeupdate', ()=>{
     document.getElementById('duration').textContent=formatTime(player.duration);
   }
 });
-document.getElementById('progress').addEventListener('input', ()=>{
-  if(player.duration) player.currentTime=(document.getElementById('progress').value/100)*player.duration;
-});
-document.getElementById('volume').addEventListener('input', ()=>{
-  player.volume=document.getElementById('volume').value;
-});
+document.getElementById('progress').addEventListener('input',()=>{ if(player.duration) player.currentTime=(document.getElementById('progress').value/100)*player.duration; });
+document.getElementById('volume').addEventListener('input',()=>{ player.volume=document.getElementById('volume').value; });
 
-// Stripe subscription
+// ===== Stripe Subscription =====
 subscribeBtn.addEventListener("click", async ()=>{
   try{
-    const res = await fetch(`${BACKEND_URL}/create-checkout-session`, {method:"POST"});
-    const data = await res.json();
-    if(data.url) window.location.href = data.url;
-    else alert("❌ Error creating checkout session");
-  }catch(e){
-    console.error("⚠️ Stripe checkout error:", e);
-    alert("Something went wrong. Make sure backend is live and env variables are correct.");
-  }
+    const res=await fetch(BACKEND_URL+"/create-checkout-session",{method:"POST"});
+    const data=await res.json();
+    if(data.url) window.location.href=data.url;
+    else alert("Error creating checkout session");
+  }catch(e){ console.error(e); alert("Something went wrong. Make sure backend is live and env variables are correct."); }
 });
 
+// ===== Check subscription (simple demo) =====
 async function checkSubscription() {
   try{
-    const res = await fetch(`${BACKEND_URL}/check-subscription`);
-    const data = await res.json();
-    if(data.active){
-      isSubscribed = true;
-      unlockPlayer();
-      subscribeBtn.style.display = "none";
-    }
-  }catch(e){ console.warn("⚠️ Subscription check failed", e); }
+    const res=await fetch(BACKEND_URL+"/check-subscription");
+    const data=await res.json();
+    if(data.active){ isSubscribed=true; unlockPlayer(); subscribeBtn.style.display="none"; }
+  }catch(e){ console.error(e); }
 }
 checkSubscription();
 
+// ===== Auto-unlock after Stripe payment =====
 function getQueryParam(name) {
-  const params = new URLSearchParams(window.location.search);
-  return params.get(name);
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
 }
-async function autoUnlockAfterPayment() {
-  const sessionId = getQueryParam('session_id');
-  if(!sessionId) return;
 
-  try {
-    const res = await fetch(`${BACKEND_URL}/check-subscription?session_id=${sessionId}`);
-    const data = await res.json();
-    if(data.active){
-      isSubscribed = true;
-      unlockPlayer();
-      subscribeBtn.style.display = "none";
-      load(0);
-      console.log("✅ Subscription active, player unlocked");
+async function autoUnlockAfterPayment() {
+    const sessionId = getQueryParam('session_id');
+    if (!sessionId) return;
+    try {
+        const res = await fetch(`${BACKEND_URL}/check-subscription?session_id=${sessionId}`);
+        const data = await res.json();
+        if (data.active) {
+            isSubscribed = true;
+            unlockPlayer();
+            subscribeBtn.style.display = "none";
+            load(0); // Auto-play first song
+        }
+    } catch (e) {
+        console.error(e);
     }
-  } catch(e){ console.warn("⚠️ Auto-unlock failed", e); }
 }
+
+// ===== Track song plays =====
+async function recordPlay(i) {
+    const song = songs[i].title;
+    try {
+        await fetch(`${BACKEND_URL}/track-play`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ song }),
+        });
+    } catch (err) {
+        console.error("Error recording play:", err);
+    }
+}
+
 autoUnlockAfterPayment();
 </script>
-
 </body>
 </html>
