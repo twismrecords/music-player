@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KINGXREEK Playlist</title>
 <style>
+/* Your existing CSS for body, card, buttons, playlist, etc. */
 body { font-family:"Poppins",sans-serif; background:#0d001a; color:#fff; display:flex; justify-content:center; align-items:flex-start; min-height:100vh; margin:0; padding:20px; }
 .card { width:480px; background:#1a0033; padding:20px; border-radius:20px; box-shadow:0 0 25px rgba(128,0,255,0.4); }
 img { width:100%; border-radius:16px; margin-bottom:20px; object-fit:cover; box-shadow:0 0 25px rgba(128,0,255,0.6); }
@@ -30,9 +31,7 @@ button:hover { background:#d3a1ff; transform:scale(1.05); }
 .track { margin:8px 0; padding:10px; border-radius:8px; background:#1a1a1a; display:flex; justify-content:space-between; align-items:center; transition:all 0.3s ease-in-out; }
 .track:hover { background:#2a2a2a; box-shadow:0 0 8px #8000FF40; }
 .track.active { background:#2a0033; box-shadow:0 0 16px #8000FFAA; transform:scale(1.02); }
-.track button { pointer-events: none; opacity: 0.4; background: #bb86fc; color: #000; font-weight: 600; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 0 8px rgba(128,0,255,0.6); }
-.track button.unlocked { pointer-events: auto; opacity: 1; box-shadow: 0 0 12px #ff6bf7, 0 0 20px #8000FF70; transform: scale(1.05); }
-.track button:hover.unlocked { box-shadow: 0 0 16px #ff6bf7, 0 0 25px #8000FFAA; transform: scale(1.1); }
+.track button { pointer-events:none; opacity:0.4; }
 </style>
 </head>
 <body>
@@ -78,6 +77,7 @@ const playlistDiv = document.getElementById('playlist');
 const player = document.getElementById('player');
 let isSubscribed = false;
 
+// Songs array
 const songs = [
   {title:"Been Waiting", file:"Been_Waiting.mp3"},
   {title:"The Marina", file:"The_Marina.mp3"},
@@ -108,37 +108,22 @@ renderPlaylist();
 
 function lockPlayer() {
   trackElements.forEach(t=>{
-    const b = t.querySelector("button");
-    b.disabled = true;
-    b.style.pointerEvents = "none";
-    b.style.opacity = "0.4";
-    b.classList.remove("unlocked");
+    const b=t.querySelector("button");
+    b.disabled=true; b.style.pointerEvents="none"; b.style.opacity="0.4";
   });
   player.pause();
 }
-
 function unlockPlayer() {
   trackElements.forEach(t=>{
-    const b = t.querySelector("button");
-    b.disabled = false;
-    b.style.pointerEvents = "auto";
-    b.style.opacity = "1";
-    b.classList.add("unlocked");
+    const b=t.querySelector("button");
+    b.disabled=false; b.style.pointerEvents="auto"; b.style.opacity="1";
   });
 }
-
 lockPlayer();
 
 // ===== Music Player functions =====
 let current=0;
-function load(i){ 
-  player.src=songs[i].file; 
-  player.play(); 
-  highlightTrack(i); 
-  updateNowPlaying(i); 
-  current=i; 
-}
-
+function load(i){ player.src=songs[i].file; player.play(); highlightTrack(i); updateNowPlaying(i); current=i; }
 function play(i){ if(!isSubscribed) return; load(i); }
 function next(){ if(!isSubscribed) return; current=(current+1)%songs.length; load(current); }
 function prev(){ if(!isSubscribed) return; current=(current-1+songs.length)%songs.length; load(current); }
@@ -172,11 +157,11 @@ subscribeBtn.addEventListener("click", async ()=>{
   }catch(e){ console.error(e); alert("Something went wrong. Make sure backend is live and env variables are correct."); }
 });
 
-// ===== Check subscription =====
+// ===== Check subscription (simple demo) =====
 async function checkSubscription() {
   try{
     const res=await fetch(BACKEND_URL+"/check-subscription");
-    const data = await res.json();
+    const data=await res.json();
     if(data.active){ isSubscribed=true; unlockPlayer(); subscribeBtn.style.display="none"; }
   }catch(e){ console.error(e); }
 }
@@ -191,6 +176,7 @@ function getQueryParam(name) {
 async function autoUnlockAfterPayment() {
     const sessionId = getQueryParam('session_id');
     if (!sessionId) return;
+
     try {
         const res = await fetch(`${BACKEND_URL}/check-subscription?session_id=${sessionId}`);
         const data = await res.json();
