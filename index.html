@@ -6,9 +6,14 @@
 <title>KINGXREEK Playlist</title>
 <style>
 body { font-family:"Poppins",sans-serif; background:#0d001a; color:#fff; display:flex; justify-content:center; align-items:flex-start; min-height:100vh; margin:0; padding:20px; }
-.card { width:480px; background:#1a0033; padding:20px; border-radius:20px; box-shadow:0 0 25px rgba(128,0,255,0.4); }
+.card { width:480px; background:#1a0033; padding:20px; border-radius:20px; box-shadow:0 0 25px rgba(128,0,255,0.4); position:relative; }
 img { width:100%; border-radius:16px; margin-bottom:20px; object-fit:cover; box-shadow:0 0 25px rgba(128,0,255,0.6); }
 h1 { text-align:center; margin-bottom:20px; color:#bb86fc; text-shadow:0 0 8px rgba(128,0,255,0.7); }
+
+.menu-btn { position:absolute; top:20px; right:20px; background:transparent; border:none; color:#fff; font-size:24px; cursor:pointer; }
+.menu-content { display:none; position:absolute; top:50px; right:20px; background:#1a0033; border-radius:10px; padding:10px; box-shadow:0 0 15px rgba(128,0,255,0.6); z-index:10; }
+.menu-content button { display:block; width:100%; margin:5px 0; }
+
 .controls { margin-bottom:18px; display:flex; flex-direction:column; align-items:center; gap:10px; }
 .buttons { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; }
 button { background:#bb86fc; border:none; color:#000; font-weight:600; padding:8px 12px; border-radius:8px; cursor:pointer; transition:all 0.2s ease; box-shadow:0 0 8px rgba(128,0,255,0.6); }
@@ -34,6 +39,12 @@ button:hover { background:#d3a1ff; transform:scale(1.05); }
 <div class="card">
 <img src="Cover.JPG" alt="Cover">
 <h1>KINGXREEK Playlist</h1>
+
+<!-- Three-dot menu -->
+<button class="menu-btn" id="menuBtn">⋮</button>
+<div class="menu-content" id="menuContent">
+  <button id="loginBtn">Login / Access</button>
+</div>
 
 <div class="controls">
   <div class="buttons">
@@ -81,13 +92,14 @@ const songs = [
 const playlistDiv = document.getElementById('playlist');
 const player = document.getElementById('player');
 const trackElements = [];
+let isLoggedIn = false; // user access flag
 
 function renderPlaylist() {
   playlistDiv.innerHTML = "";
   songs.forEach((s,i)=>{
     const div=document.createElement("div");
     div.className="track";
-    div.innerHTML=`<span>${s.title}</span><button onclick="load(${i})">Play</button>`;
+    div.innerHTML=`<span>${s.title}</span><button onclick="playTrack(${i})">Play</button>`;
     playlistDiv.appendChild(div);
     trackElements.push(div);
   });
@@ -103,11 +115,15 @@ function load(i){
   updateNowPlaying(i); 
   current=i; 
 }
-function next(){ current=(current+1)%songs.length; load(current); }
-function prev(){ current=(current-1+songs.length)%songs.length; load(current); }
-function shuffle(){ current=Math.floor(Math.random()*songs.length); load(current); }
-function loop(){ player.loop=!player.loop; alert("Repeat "+(player.loop?"ON":"OFF")); }
-function toggle(){ player.paused?player.play():player.pause(); }
+function playTrack(i){ 
+  if(!isLoggedIn){ alert("Please login to access the music."); return; }
+  load(i); 
+}
+function next(){ if(!isLoggedIn) return; current=(current+1)%songs.length; load(current); }
+function prev(){ if(!isLoggedIn) return; current=(current-1+songs.length)%songs.length; load(current); }
+function shuffle(){ if(!isLoggedIn) return; current=Math.floor(Math.random()*songs.length); load(current); }
+function loop(){ if(!isLoggedIn) return; player.loop=!player.loop; alert("Repeat "+(player.loop?"ON":"OFF")); }
+function toggle(){ if(!isLoggedIn) return; player.paused?player.play():player.pause(); }
 function highlightTrack(i){ trackElements.forEach((t,idx)=>{ t.classList.toggle('active',idx===i); }); }
 function updateNowPlaying(i){ document.getElementById('songTitle').textContent=songs[i].title; document.getElementById('nowPlaying').classList.add("active"); }
 function formatTime(sec){ const m=Math.floor(sec/60); const s=Math.floor(sec%60).toString().padStart(2,"0"); return `${m}:${s}`; }
@@ -124,6 +140,20 @@ player.addEventListener('timeupdate',()=>{
 });
 document.getElementById('progress').addEventListener('input',()=>{ if(player.duration) player.currentTime=(document.getElementById('progress').value/100)*player.duration; });
 document.getElementById('volume').addEventListener('input',()=>{ player.volume=document.getElementById('volume').value; });
+
+// ===== Menu toggle =====
+const menuBtn = document.getElementById('menuBtn');
+const menuContent = document.getElementById('menuContent');
+menuBtn.addEventListener('click',()=>{ menuContent.style.display = menuContent.style.display === 'block' ? 'none' : 'block'; });
+
+// ===== Login button =====
+const loginBtn = document.getElementById('loginBtn');
+loginBtn.addEventListener('click',()=>{
+  // Example: redirect to Stripe login/payment page
+  alert("Redirecting to login/payment...");
+  // After payment confirmation, set:
+  // isLoggedIn = true; and reload page or unlock player automatically
+});
 </script>
 </body>
 </html>
